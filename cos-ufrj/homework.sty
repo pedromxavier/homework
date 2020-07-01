@@ -1,0 +1,55 @@
+%% Question sectioning
+\newcounter{quests}
+\newcounter{subquests}
+\newcounter{subsubquests}
+
+\setcounter{quests}{0}
+\setcounter{subquests}{0}
+\setcounter{subsubquests}{0}
+
+\renewcommand{\thesubquests}{%%
+	\roman{subquests}
+}
+
+\renewcommand{\thesubsubquests}{%%
+	\alph{subsubquests}
+}
+
+\newcommand{\quest}[1][]{%%
+	\stepcounter{quests}
+	\setcounter{subquests}{0}
+	\setcounter{subsubquests}{0}
+	\newpage
+    {\Large\bfseries Questão \thequests#1} \\%%
+  
+}
+
+\newcommand{\subquest}[1][]{%%
+	\stepcounter{subquests}
+	\setcounter{subsubquests}{0}
+    {\large\bfseries\thesubquests\hspace{-3pt}) #1} \\%%
+}
+
+\newcommand{\subsubquest}[1][]{%%
+	\stepcounter{subsubquests}
+	\par {\bfseries\thesubsubquests\hspace{-3pt}) #1}
+}
+
+\def \@register {\space}
+
+\newcommand{\register}[1]{%%
+	\def \@register {#1}
+}
+
+\renewcommand{\maketitle}{%%
+	\begin{center}
+		{\Huge\bfseries \@title\space} \\ \vspace{30pt}
+		{\huge \@author\space} \\ \vspace{5pt}
+		{\ttfamily\Large \@register\space} \\ \vspace{20pt}
+		{\Large \@date \space}
+	\end{center}
+	\pagebreak
+}
+
+
+%% end of file

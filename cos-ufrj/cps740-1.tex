@@ -1,24 +1,115 @@
 \documentclass{homework}
 
+\usepackage{homework}
+\usepackage{pythontex}
+
 \title{CPS740 - Lista 1}
 \author{Pedro Maciel Xavier}
-\dre{116023847}
+\register{116023847}
 
 \begin{document}
-\maketitle
-	\quest{}
-	\subquest{a}
+	\maketitle
+	
+	\quest
+	
+	\subquest[Primeiro Algoritmo]
+	
+	\subsubquest[Algoritmo]
+	
 	\begin{algor}
 seja L[n]
-seja m = -$\infty$
-para i = n até 1:
-	para j = i até 1:
-		se L[j] > m:
-			m <- L[j]
-			k <- j
-	L[i] <-> L[k]
-	m <- -$\infty$
+
+def ordena(L[], n):
+	seja m, k
+	para i = n até 2:
+		m <- $-\infty$
+		para j = i até 1:
+			se L[j] > m:
+				m <- L[j]
+				k <- j
+		L[j] <-> L[k]
+	retorna L
 	\end{algor}
-	\subquest{b}
+
+	\subsubquest[Passo-a-passo]
+	\begin{align*}
+	L = &\left\{2,7,5,6,\mathbf{9},0,1,4,8,5,\mathbf{3}\right\} 1 \times 11 = 11\\
+	&\left\{2,7,5,6,3,0,1,4,\mathbf{8},\mathbf{5},9\right\} 2 \times 10 = 20\\
+	&\left\{2,\mathbf{7},5,6,3,0,1,4,\mathbf{5},8,9\right\} 3 \times  9 = 27\\
+	&\left\{2,5,5,\mathbf{6},3,0,1,\mathbf{4},7,8,9\right\} 4 \times  8 = 32\\
+	&\left\{2,5,\mathbf{5},4,3,0,\mathbf{1},6,7,8,9\right\} 5 \times  7 = 35\\
+	&\left\{2,\mathbf{5},1,4,3,\mathbf{0},5,6,7,8,9\right\} 6 \times  6 = 36\\
+	&\left\{2,0,1,\mathbf{4},\mathbf{3},5,5,6,7,8,9\right\} 7 \times  5 = 35\\
+	&\left\{2,0,1,\mathbf{3},4,5,5,6,7,8,9\right\} 8 \times  4 = 32\\
+	&\left\{\mathbf{2},0,\mathbf{1},3,4,5,5,6,7,8,9\right\} 9 \times  3 = 27\\
+	&\left\{\mathbf{1},\mathbf{0},2,3,4,5,5,6,7,8,9\right\}10 \times  2 = 20\\
+	&\left\{0,1,2,3,4,5,5,6,7,8,9\right\} \text{Total de $275$ passos}
+	\end{align*}
 	
+	\subquest[Segundo Algoritmo]
+	
+	\subsubquest[Algoritmo]
+	\begin{algor}
+seja L[n]
+
+def ordena(L[], n):
+	
+	\end{algor}
+
+	%% 2
+	\quest
+	Seja $G = (V, E)$ um grafo com $m$ arestas e $n$ vértices.\\
+	
+	\subsubquest A \textbf{Matriz de Adjacências} $A^{n \times n}$ de $G$ é dada por:
+		\[A_{i,j} = \begin{cases}
+			1, \text{ se } (i, j) \in E\\
+			0, \text{ caso contrário}
+		\end{cases}\]
+	Desta maneira a matriz terá suas $n^2$ entradas. Por isso, precisaremos de, no mínimo, $n^2$ \emph{bits} para representá-lo assim.\\
+	
+	\subsubquest A \textbf{Estrutura de Adjacências} $L$ de $G$ consiste em uma lista de tamanho $n$ contendo em cada nó $i$ um ponteiro para uma lista que contém os vértices adjacentes a $i$. Ou simplesmente:
+		$$j \in L_i \iff (i, j) \in E$$
+	Neste caso, a demanda por espaço não está diretamente relacionada ao número de vértices, mas sim, à quantidade de arestas. Grafos com poucas conexões podem ser representados de maneira eficiente com essa estrutura. Por outro lado, redes muito conexas tornam esta abordagem indesejável.\\
+	\\
+	Para cada aresta introduzida no grafo temos um custo de $2e$ \emph{bits}, onde $e$ representa o armazenamento de um nó $j$ em uma lista e depende da implementação. O custo dobrado vem da necessidade de armazenar cada aresta em duas listas distintas. Por fim, o custo total para armazenar o grafo $G$ desta maneira seria de $2e \times m + v \times n$, considerando $v$ o custo para armazenar $L$.\\
+	
+	\subsubquest Comparando as duas escolhas de representação, podemos optar pela \textbf{Matriz de Adjacências} sempre que
+		$$n^2 < 2e \times m + v \times n$$
+	%% 3
+	\quest
+	%% 4
+	\quest
+	%% 5
+	\quest
+	%% 6
+	\quest
+	%% 7
+	\quest
+	\subsubquest A soma dos quadrados dos números de $1$ até $n$.
+	
+	\subsubquest São executadas sucessivas multiplicações seguidas de soma.
+	\subsubquest Temos $n$ multiplicações e $n$ somas, totalizando $2n$ operações, ou seja, tempo linear $O(n)$.
+	\subsubquest Existem algoritmos melhores. Demonstração:\\
+	Temos que
+	\begin{align*}
+		x^3 - (x-1)^3 &= x^3 - (x^3 - 3x^2 + 3x - 1)\\
+					  &= x^3 - x^3 + 3x^2 - 3x + 1\\
+					  &= 3x^2 - 3x + 1
+	\end{align*}
+	Assim,
+	\begin{align*}
+		&\implies& (x-1)^3 - (x-2)^3 &= 3(x-1)^2 - 3(x-1) + 1\\
+		&\implies& [x^3 - (x-1)^3] + [(x-1)^3 - (x-2)^3] &= [3x^2 - 3x + 1] + [3(x-1)^2 - 3(x-1) + 1]\\
+		&\implies& x^3 - (x-2)^3 &= 3[x^2 + (x-1)^2] - 3[x + (x-1)] + 2\\
+		& & &~\vdots\\
+		&\implies& x^3 - (x-(n+1))^3 &= 3\sum_{i=1}^{n}(x-i)^2 - 3\sum_{i=1}^n(x-i) + (n+1)
+	\end{align*}
+	Escolhendo $x = 0$:
+	\begin{align*}
+	&\implies& -(-(n+1))^3 &= 3\sum_{i=1}^{n}(-i)^2 - 3\sum_{i=1}^n(-i) + (n+1)\\
+	&\implies&     (n+1)^3 &= 3\sum_{i=1}^{n} i^2 + 3\sum_{i=1}^n i + (n+1)\\
+	&\implies& \sum_{i=1}^{n} i^2 &= \frac{(n+1)^3 - (n+1)}{3} - \sum_{i=1}^n i\\
+	&        &					  &= \frac{(n+1)^3 - (n+1)}{3} - \frac{n (n+1)}{2}
+	\end{align*}
+	Desta maneira, temos 3 somas, 3 multiplicações e 2 divisões, totalizando 8 operações, ou seja, tempo constante $O(1)$.
 \end{document}
