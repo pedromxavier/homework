@@ -1,0 +1,248 @@
+\documentclass{homework}
+
+\usepackage{homework}
+\usetikzlibrary{graphdrawing}
+\usegdlibrary{trees}
+
+\usetikzlibrary{graphs, graphs.standard, quotes}
+
+\title{CPS740 - Lista 2}
+\author{Pedro Maciel Xavier}
+\register{116023847}
+
+
+\begin{document}
+	
+	\maketitle
+	
+	\quest
+	
+	\subsubquest O Algoritmo guloso abaixo consiste em colocar cada objeto $k$ de peso $\vec{p}[k]$ e valor $\vec{v}[k]$ na mochila, caso esta ainda possua capacidade de armazená-lo, ou seja, não ultrapasse o peso máximo $P$. Ele retorna um par $(V, \vec{x})$ com o valor total da mochila e o vetor binário $\vec{x}$ que representa itens escolhidos. Fazendo isso da maneira ingênua, encontramos um caso simples onde o algoritmo não funciona para encontrar a mochila de valor máximo: Basta a situação em que o algoritmo, por gula, escolhe uma combinação dentre os $m$ primeiros objetos e temos que $\sum_{i=1}^{m} \vec{v}[i] \cdot \vec{x}[i] < \vec{v}[m + 1]$ e $\vec{p}[m + 1] \le P$.\par
+	
+	Diferentes abordagens podem surgir ordenando os objetos conforme o seu custo-benefício ou valor de modo a tentar inserir primeiro os candidatos segundo algum critério de prioridade. Isso, contudo, também não contorna o problema enunciado acima. Contra-exemplos: $P = 10; \vec{p} = \{4, 1, 10\}; \vec{v} = \{5, 4, 10\}$ e $P = 10; \vec{p} = \{4, 1, 10\}; \vec{v} = \{5, 6, 10\}$.\par
+	
+	\textbf{Uma descrição em pseudo-código encontra-se na próxima página.}
+	
+	\newpage
+	
+	\begin{algor}{Algoritmo Guloso}
+	// Insertion-sort em dois vetores
+	// segundo algum critério
+	def ordena(v[n], p[n], n):
+		para i de n até 2:
+			seja m <- critério(v[i], p[i])
+			seja k <- i
+			para j de i-1 até 1:
+				r <- critério(v[j], p[j])
+				se r > m:
+					m <- r
+					k <- j
+			v[i] <-> v[k]
+			p[i] <-> p[k]
+	
+	def guloso(P, n, v[n], p[n]):
+		seja x[n]
+		seja V <- 0	
+			
+		ordena(v, p, n)
+
+		enquanto n > 0:
+			se p[n] <= P:
+				x[n] <- 1
+				P <- P - p[n]
+				V <- V + v[n]
+			n <- n - 1
+			
+		retorna (V, x)
+		
+	\end{algor}
+
+	\newpage
+	
+	\subsubquest O Algoritmo a seguir consiste em testar para subconjuntos cada vez menores do conjunto de objetos quais configurações de mochila são satisfatórias, escolhendo dentre estas a de maior valor. O processo se dá de maneira recursiva. Cada passo de recursão se divide ao decidir se colocamos um objeto na mochila ou não, assim como as possíveis consequências da escolha. Adicionar um item diminui a carga disponível para as próximas etapas e incrementa o valor obtido. Após cada escolha, passamos a olhar para um subconjunto contendo os objetos de índice menor do que aquele sob análise.\par
+	
+	Cada chamada da função \code{f} retorna dois números inteiros: O valor $v$ arrecadado até o momento e um número $x$ cuja representação binária representa as escolhas feitas até então. O $i$-ésimo bit deste inteiro indica se o $i$-ésimo objeto foi escolhido ou não. Por fim, o valor de $x$ é decodificado em um vetor binário $\vec{X}$.\par
+	
+	Como é de se esperar de um processo em programação dinâmica, o resultado da chamada de \code{f(P, n, ...)} para um determinado par \code{[P, n]} é armazenado em uma tabela de dispersão (\textit{Hashmap}), criada especificamente para cada instância do problema (escolha de $\vec{v}$ e $\vec{p}$). Isso permite que valores já calculados anteriormente sejam obtidos em tempo constante.\par
+	
+	Casos na borda, ou seja, fora do espaço de busca, são tratados primeiro. Em seguida verifica-se a existência de um resultado existente armazenado para o par \code{[P, n]}. Por fim, se necessário, prossegue-se com o processo de recursão.\par
+	
+	\textbf{Uma descrição em pseudo-código encontra-se na próxima página.}
+	
+	\newpage
+	
+	\begin{algor}{Programação Dinâmica}
+	def progdina(P, n, v[n], p[n]):
+		seja H[?] // Tabela de dispersão (Hashmap)
+		seja X[n] // Vetor das escolhas
+		
+		seja [v, x] <- f(P, n - 1, v, p, H)
+		
+		// Transforma x em um vetor de bits X
+		para cada i de 1 até n:
+			X[i] <- x % 2
+			x <- x >> 1
+			
+		retorna X
+		
+	def f(P, n, v[n], p[n], H[?]):
+		se n < 0:
+			retorna [0, 0]
+			
+		senão se P == 0:
+			se p[n] <= 0:
+				retorna [v[n], (1 << n)]
+			senão:
+				retorna [0, 0]
+		
+		senão se P < 0:
+			retorna [-$\infty$, 0]
+			
+		senão se [P, n] em H:
+			retorna H[P, n]
+			
+		senão:
+			// Incluindo o n-ésimo objeto
+			[v_i, x_i] <- f(P - p[n], n - 1, v, p, H)
+			v_i <- v_i + v[n]     // Marca o n-ésimo
+			x_i <- x_i + (1 << n) // bit de x (2^n)
+			
+			// Excluindo o n-ésimo objeto
+			[v_e, x_e] <- f(P, n - 1, v, p, H)
+			
+			se v_i > v_e:
+				H[P, n] <- [v_i, x_i]
+			senão:
+				H[P, n] <- [v_e, x_e]
+				
+			retorna H[P, n]
+	\end{algor}
+	
+	\quest
+	
+	Neste problema, dado um conjunto $T$ de tarefas, onde cada tarefa $t \in T$ é representada por um par $(\bft{i}(t), \bft{f}(t))$ com $\bft{i}(t) \le \bft{f}(t)$ contendo o tempo de início e fim da mesma, queremos encontrar um planejamento de tarefas sem sobreposição de horário, para realizar o máximo número possível de tarefas. Isto é, buscamos o subconjunto $\argmax_{S \subseteq T} |S|$ tal que:
+	
+	$$\left]\bft{i}(s_i), \bft{f}(s_i)\right[ \cap \left]\bft{i}(s_j), \bft{f}(s_j)\right[ = \emptyset ~~~ \forall s_i \neq s_j \in S$$
+	
+	Podemos pensar neste problema como sendo equivalente a encontrar um conjunto independente em um grafo $G$ cujas arestas são definidas pela relação de sobreposição dos horários entre um par de tarefas. Vejamos o seguinte exemplo para $T = \{(2,5),(11,15),(4,9),(7,10)\}$. As tarefas $t_1 = (2,5)$ e $t_3 = (4,9)$, assim como as tarefas  $t_3 = (4,9)$ e $t_4 = (7,10)$ apresentam sobreposição. Isso significa que as arestas do grafo $G$ serão as do conjunto $E(G) = \{(1, 3), (3, 4)\}$.\par
+	
+	\shorthandoff{"}
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}[>= stealth, node distance = {1.0cm and 1.5cm}, v/.style = {draw, circle}]
+		\graph[nodes={circle, draw}, grow right=2.25cm, branch down=1.75cm]
+		{
+			1 -!- 2,
+			{1, 4} -- 3,
+		};
+		\end{tikzpicture}
+		\hspace{10em}
+		\begin{tikzpicture}[>= stealth, node distance = {1.0cm and 1.5cm}, v/.style = {draw, circle}]
+		\graph [nodes={circle, draw}, grow right=2.25cm, branch down=1.75cm]
+		{
+			1 -- 2,
+			4 -- {2 -- {3}, 1},
+		};
+		\end{tikzpicture}
+		\caption{Grafo $G$ e seu complemento $\overline{G}$}
+	\end{figure}
+	\shorthandon{"}
+	
+	Tarefas que não podem ser realizadas em um mesmo planejamento possuem uma aresta que as liga em $G$. Queremos agendar o máximo possível de tarefas que não possuem esta característica, isto é, encontrar o maior conjunto independente de vértices do grafo. A este processo equivale buscar a maior clique no complemento $\overline{G}$ de $G$. No exemplo, a maior clique de $\overline{G}$ é composta pelos vértices 1, 2 e 4.\par
+	
+	\textbf{A descrição em pseudo-código para encontrar o tamanho da clique maximal do Grafo complementar encontra-se na próxima página.}
+	
+	\newpage
+	
+	\begin{algor}{Agendamento de tarefas}
+	def tarefas(T[n][2], n):
+		// Conjuntos de vértices e arestas
+		seja V <- {v para cada v de 1 até n}
+		seja E <- {}
+		
+		para cada i de 1 até n:
+			para cada j de i + 1 até n:
+				se T[i][2] <= T[j][1] ou T[j][2] <= T[i][1]:
+					E <- E $\cup$ {(i, j)}	
+	\end{algor}
+	
+	\quest
+	
+	\subsubquest Existem duas árvores geradoras mínimas com $\displaystyle \sum_{e \in E_T} d(e) = 14$.
+	
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture} [>=stealth, every node/.style={circle, draw, minimum size=0.75cm}]
+			\graph [tree layout, grow=down, fresh nodes, level distance=0.5in, sibling distance=0.5in]
+			{
+				A -- {B -- {C, D -- {E}}, F};
+			};
+		\end{tikzpicture}
+		\hspace{10em}
+		\begin{tikzpicture} [>=stealth, every node/.style={circle, draw, minimum size=0.75cm}]
+			\graph [tree layout, grow=down, fresh nodes, level distance=0.5in, sibling distance=0.5in]
+			{
+				A -- {B -- {C -- {E -- {D}}}, F};
+			};
+		\end{tikzpicture}
+		\caption{Árvores geradoras mínimas}
+	\end{figure}
+	
+	\subsubquest A aresta $(F, D)$ não pode compor uma árvore gerador mínima porquê existe um caminho entre F e D cuja soma das arestas é inferior a $d((F, D)) = 10$. Por exemplo, o caminho $(F, A, B, D)$, tem soma das arestas $1 + 1 + 4 = 6$.
+	
+	\subsubquest $\rchi(G) = 2$. Não é possível colorir o grafo com uma só cor, visto que ele é conexo e é composto por mais de um vértice. No entanto, o grafo é bipartido em $V_1 = \{A, C, D\}$ e $V_2 = \{B, E, F\}$ e, portanto, pode ser pintado com duas cores somente.
+	
+	\quest
+	
+	\subsubquest Em uma matriz de adjacências, verificar a existência de uma aresta $(v, w)$ significa simplesmente ler a entrada \code{A[v][w]} da matriz, o que nos custa tempo constante. A etapa de remover a aresta segue da mesma maneira e consiste em atribuir um valor a esta mesma posição. Com estas duas operações em sequência temos um algoritmo de complexidade $O(1)$.\par
+	
+	Uma estrutura de adjacências, por sua vez, apresenta um custo maior. Um algoritmo que faça essa verificação precisa percorrer todos os nós da lista encadeada \code{A[v]}, o que levará $\text{grau}(v)$ passos. Em um grafo completo (o pior caso), o grau de um vértice pode ser, no máximo, $n - 1$. Com isso, a busca tem complexidade $O(n)$. Caso encontre o vértice $w$ na lista da vizinhança de $v$ e tratando-se de uma lista encadeada, basta fazer com que o nó que apontava para $w$ aponte para aquele que $w$ apontava anteriormente. Ao todo, verificar a existência e remover a aresta demanda tempo linear $O(n)$.\par
+	
+	\subsubquest Ao utilizar vetores ordenados no lugar das listas encadeadas na estrutura de adjacências temos um ganho na verificação da existência de uma aresta, já que podemos encontrar um elemento em um vetor ordenado em tempo logarítmico $O(\log n)$ através de uma busca binária. A remoção da aresta, no entanto, acaba por se mostrar um processo mais custoso. No paradigma anterior, era possível fazer isso em tempo constante $O(1)$. Agora que temos um vetor, isso demanda tempo linear $O(n)$ pois ao remover um elemento é preciso copiar todos aqueles que o sucedem para a posição anterior, ou seja, se encontramos o elemento na posição $i$ do vetor, precisamos copiar o valor da entrada $j$ para a posição $j - 1$ para todo $j > i$. De qualquer forma, nesse caso temos também complexidade linear $O(n + \log n) = O(n)$.
+	
+	\textbf{Nota:} Importante lembrar que no caso de grafos não-direcionados temos custo de remoção dobrado para cada uma das implementações, o que não altera a classe de complexidade das análises.
+	
+	\quest
+	
+	\subsubquest Para que o algoritmo falhe, basta existir um ciclo cujas arestas possuam peso inferior aos pesos das demais ligações dos vértices que pertencem ao ciclo. Caso isto aconteça, o algoritmo dará prioridade a formar o ciclo devido ao baixo valor de suas arestas e a condição de que $M$ se torne uma árvore não será atendida, pela própria definição.\par
+	
+	\shorthandoff{"}
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}[>= stealth, node distance = {1.0cm and 1.5cm}, v/.style = {draw, circle}]
+		\graph[nodes={circle, draw}, grow right=2.25cm, branch down=1.75cm]
+		{
+			A,
+			B -- ["1"] A -- ["1"] C -- ["2"] D,
+			B -- ["1"] C,
+			%C -- ["2", swap] D,
+		};
+		\end{tikzpicture}
+		\caption{Um grafo com um ciclo}
+	\end{figure}
+	\shorthandon{"}
+	
+	No grafo acima, encontramos este caso, em que o algoritmo prefere completar o ciclo $(A, B, C, A)$ e acaba por não conseguir criar uma árvore a partir do grafo.
+	
+	
+	\subsubquest Respondendo ao questionamento proposto na "\textit{Dica}": Como foi dito no item acima, ao completar um ciclo, não somos mais capazes de obter uma árvore. Assim, acrescentamos à 5ª linha do algoritmo, a condição para que a aresta só seja inserida à árvore $M$ caso esta operação não provoque a formação de um ciclo.
+	
+	\subsubquest Toda árvore com $n = |V(G)|$ vértices, além de ser um grafo acíclico e conexo, tem exatamente $m = n - 1 = |E(G)|$ arestas. Dessa maneira, se o algoritmo garante que não existem ciclos na construção de $M$ por conta da condição imposta no item \textbf{b)}, este garante que $M$ não será uma árvore enquanto não possuir $|E(G)| = |V(G)| - 1$ arestas.\par
+	
+	Após $|V(G)| - 1$ inserções, o algoritmo nos garante que $M$ será uma árvore geradora mínima, conforme o Lema 5.2\cite{jayme:18}.
+	
+	\quest
+	
+	\subsubquest
+
+	\subsubquest
+	
+	\subsubquest
+	
+	\subsubquest
+	
+	
+	\begin{thebibliography}{10}
+		\bibitem{jayme:18} SZWARCFITER, Jayme Luiz, \textbf{Teoria Computacional de Grafos}, 1ª edição, Rio de Janeiro, 2018.
+	\end{thebibliography}
+\end{document}
