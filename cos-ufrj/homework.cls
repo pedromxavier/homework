@@ -4,6 +4,7 @@
 
 \RequirePackage{amsmath}
 \RequirePackage{amssymb}
+\RequirePackage{mathrsfs}
 \RequirePackage{xcolor}
 \RequirePackage{listings}
 \RequirePackage[utf8]{inputenc}
@@ -12,8 +13,12 @@
 \RequirePackage{float}
 \RequirePackage{tikz}
 
+\RequirePackage{textgreek}
+
 \setlength{\parindent}{0em}
 \setlength{\parskip}{1em}
+\setlength{\voffset}{-1in}
+\setlength{\textheight}{640pt}
 
 \allowdisplaybreaks
 
@@ -116,6 +121,8 @@
 	{\_grau\_}{{{\emphstyle grau}}}4
 	{\_soma\_}{{{\emphstyle soma}}}4
 	{\_viz\_}{{{\emphstyle viz}}}3
+	{\_max\_}{{{\emphstyle max}}}3
+	{\_min\_}{{{\emphstyle min}}}3
 	,
 }
 

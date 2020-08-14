@@ -5,6 +5,7 @@
 \usegdlibrary{trees}
 
 \usetikzlibrary{graphs, graphs.standard, quotes}
+\usegdlibrary{force}
 
 \title{CPS740 - Lista 2}
 \author{Pedro Maciel Xavier}
@@ -41,19 +42,19 @@
 			p[i] <-> p[k]
 	
 	def guloso(P, n, v[n], p[n]):
-		seja x[n]
+		seja X[n]
 		seja V <- 0	
 			
 		ordena(v, p, n)
 
 		enquanto n > 0:
 			se p[n] <= P:
-				x[n] <- 1
+				X[n] <- 1
 				P <- P - p[n]
 				V <- V + v[n]
 			n <- n - 1
 			
-		retorna (V, x)
+		retorna (V, X)
 		
 	\end{algor}
 
@@ -76,14 +77,14 @@
 		seja H[?] // Tabela de dispersão (Hashmap)
 		seja X[n] // Vetor das escolhas
 		
-		seja [v, x] <- f(P, n - 1, v, p, H)
+		seja [V, x] <- f(P, n - 1, v, p, H)
 		
 		// Transforma x em um vetor de bits X
 		para cada i de 1 até n:
 			X[i] <- x % 2
 			x <- x >> 1
 			
-		retorna X
+		retorna [V, X]
 		
 	def f(P, n, v[n], p[n], H[?]):
 		se n < 0:
@@ -120,6 +121,8 @@
 	
 	\quest
 	
+	\subsection*{Uma abordagem por Grafos}
+	
 	Neste problema, dado um conjunto $T$ de tarefas, onde cada tarefa $t \in T$ é representada por um par $(\bft{i}(t), \bft{f}(t))$ com $\bft{i}(t) \le \bft{f}(t)$ contendo o tempo de início e fim da mesma, queremos encontrar um planejamento de tarefas sem sobreposição de horário, para realizar o máximo número possível de tarefas. Isto é, buscamos o subconjunto $\argmax_{S \subseteq T} |S|$ tal que:
 	
 	$$\left]\bft{i}(s_i), \bft{f}(s_i)\right[ \cap \left]\bft{i}(s_j), \bft{f}(s_j)\right[ = \emptyset ~~~ \forall s_i \neq s_j \in S$$
@@ -154,16 +157,58 @@
 	
 	\newpage
 	
-	\begin{algor}{Agendamento de tarefas}
+	\begin{algor}{Agendamento de tarefas através de um Grafo}
 	def tarefas(T[n][2], n):
 		// Conjuntos de vértices e arestas
-		seja V <- {v para cada v de 1 até n}
-		seja E <- {}
+		seja V{} <- {v para cada v de 1 até n}
+		seja E{} <- {}
 		
+		// Construção do complemento de G
 		para cada i de 1 até n:
 			para cada j de i + 1 até n:
+				// tarefas não concomitantes
 				se T[i][2] <= T[j][1] ou T[j][2] <= T[i][1]:
 					E <- E $\cup$ {(i, j)}	
+		retorna clique_maximal(V, E)
+		
+	def clique_maximal(V{}, E{}):
+		// Retorna o tamanho do maior clique no grafo G(V, E)
+		se _vazio_(V):
+			retorna 0
+		// Cliques de tamanho 2 (conjunto de conjuntos)
+		seja K{} <- {{v, w} para cada (v, w) em E}
+		se _vazio_(K):
+			retorna 1
+		senão:
+			seja r <- 2
+			seja X{} // Conjunto de r-cliques
+			seja x{} // Conjunto dos vértices do clique
+			enquanto r <= |V|:
+				para cada k em K:
+					para cada v em V:
+						x <- k $\cup$ {v}
+						se x em X:
+							continua
+						senão se forma_clique(E, k, v):
+							X <- X $\cup$ {x}		
+				se _vazio_(X):
+					para
+				senão:
+					K <- X
+					X <- {}
+					r <- r + 1
+					continua
+			retorna r
+			
+	def forma_clique(E{}, k{}, v):
+		// Verifica se k $\cup$ {v} forma uma clique
+		// dado que k é uma clique
+		para cada w em k:
+			se (v, w) em E:
+				continua
+			senão:
+				retorna 0
+		retorna 1
 	\end{algor}
 	
 	\quest
@@ -229,18 +274,220 @@
 	
 	\subsubquest Toda árvore com $n = |V(G)|$ vértices, além de ser um grafo acíclico e conexo, tem exatamente $m = n - 1 = |E(G)|$ arestas. Dessa maneira, se o algoritmo garante que não existem ciclos na construção de $M$ por conta da condição imposta no item \textbf{b)}, este garante que $M$ não será uma árvore enquanto não possuir $|E(G)| = |V(G)| - 1$ arestas.\par
 	
-	Após $|V(G)| - 1$ inserções, o algoritmo nos garante que $M$ será uma árvore geradora mínima, conforme o Lema 5.2\cite{jayme:18}.
+	Após $|V(G)| - 1$ inserções, o algoritmo nos garante que $M$ será uma árvore geradora mínima, conforme o Lema 5.2\cite{jayme:18}.\par
 	
 	\quest
 	
-	\subsubquest
+	\subsubquest Comecemos o desenvolvimento pela observação de que as árvores geradoras de $K_n$ rotulado são simplesmente as diferentes possíveis árvores rotuladas com $n$ vértices. Escolhendo uma árvore $T$ qualquer em $\mathbb{T}_n$ (conjunto das árvores rotuladas com $n$ vértices), podemos dizer que $E(T) \subset E(K_n)$, já que sempre é possível ligar dois vértices em $K_n$. Um exemplo sobre $K_5$:\par
+	
+	\shorthandoff{"}
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}[>= stealth, v/.style = {draw, circle}]
+		\graph[spring layout, nodes={circle, draw}]
+		{
+			1 -- {2, 3, 4, 5},
+			2 -- {3, 4, 5},
+			3 -- {4, 5},
+			4 -- {5}
+		};
+		\end{tikzpicture}
+		\hspace{10em}
+		\begin{tikzpicture}[>= stealth, v/.style = {draw, circle}]
+		\graph[spring layout, nodes={circle, draw}]
+		{
+			1 -- [red, very thick] {2, 3},
+			2 -- [red, very thick] {4, 5},
+		
+			1 -- [gray, thin, dashed] {4, 5},
+			2 -- [gray, thin, dashed] {3},
+			3 -- [gray, thin, dashed] {4, 5},
+			4 -- [gray, thin, dashed] {5},	
+		};
+		\end{tikzpicture}
+		\caption{$K_5$ e uma árvore geradora.}
+	\end{figure}
+	\shorthandon{"}
+	
+	Seja $T_n = |\mathbb{T}_n|$. Vamos contar as árvores que existem para $n = 1, 2, 3, 4$. Para $n = 1$ temos apenas a árvore de um único vértice. Com $n = 2$, a única configuração possível é a ligação entre os vértices $1$ e $2$.\par
+	
+	\shorthandoff{"}
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}[>= stealth, v/.style = {draw, circle}]
+		\graph[spring layout, nodes={circle, draw}]
+		{
+			1
+		};
+		\end{tikzpicture}
+		\hspace{10em}
+		\begin{tikzpicture}[>= stealth, v/.style = {draw, circle}]
+		\graph[tree layout, nodes={circle, draw}]
+		{
+			1 -- [red, very thick] {2},	
+		};
+		\end{tikzpicture}
+		\caption{$\mathbb{T}_n$ para $n = 1, 2$}
+	\end{figure}
+	\shorthandon{"}	
+	
+	Para $n = 3$, construir uma árvore geradora consiste em escolher 2 dentre as 3 arestas da clique $K_3$. Com isso produzimos $3$ configurações distintas.\par
+	
+	\shorthandoff{"}
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}[>= stealth, v/.style = {draw, circle}]
+		\graph[tree layout, nodes={circle, draw}]
+		{
+			1 -- [gray, thin, dashed] {2},
+			3 -- [red, very thick] {1, 2}
+		};
+		\end{tikzpicture}
+		\hspace{5em}
+		\begin{tikzpicture}[>= stealth, v/.style = {draw, circle}]
+		\graph[tree layout, nodes={circle, draw}]
+		{
+			1 -- [yellow, very thick] {2, 3},
+			3 -- [gray, thin, dashed] {2}
+		};
+		\end{tikzpicture}
+		\hspace{5em}
+		\begin{tikzpicture}[>= stealth, v/.style = {draw, circle}]
+		\graph[tree layout, nodes={circle, draw}]
+		{
+			{1, 3} -- [blue, very thick] {2},
+			3 -- [gray, thin, dashed] {1}
+		};
+		\end{tikzpicture}
+		\caption{Árvores em $\mathbb{T}_3$}
+	\end{figure}
+	\shorthandon{"}
 
-	\subsubquest
+	Por fim, para $n = 4$, temos de escolher $3$ dentre as $6$ arestas da clique, mas sem formar ciclos.\par
 	
-	\subsubquest
+	\shorthandoff{"}
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}[>= stealth, v/.style = {draw, circle}]
+		\graph[spring layout, nodes={circle, draw}]
+		{
+			{1, 3, 4} -- [red, very thick] {2},
+			{1} -- [gray, thin, dashed] {3, 4},
+			{3} -- [gray, thin, dashed] {4}
+		};
+		\end{tikzpicture}
+		\hspace{5em}
+		\begin{tikzpicture}[>= stealth, v/.style = {draw, circle}]
+		\graph[spring layout, nodes={circle, draw}]
+		{
+			{1} -- [gray, thin, dashed] {2, 3, 4},
+			{2} -- [teal, very thick] {3, 4},
+			{3} -- [teal, very thick] {4}
+		};
+		\end{tikzpicture}
+		\caption{Uma árvore em $\mathbb{T}_4$ e um 3-clique em $K_4$}
+	\end{figure}
+	\shorthandon{"}
 	
-	\subsubquest
+	O único ciclo possível seria um subgrafo isomorfo a $K_3$. Formar um ciclo seria escolher $3$ dentre os $4$ vértices do grafo. Enunciadas estas relações, temos que:\par
 	
+	$$T_4 = {6 \choose 3} - {4 \choose 3} = 20 - 4 = 16$$
+	
+	Organizando os valores obtidos em uma tabela temos:\par
+	
+	\begin{figure}[H]
+		\centering
+		\begin{tabular}{|c|c|c|c|c|}
+			\hline
+			$n$ & 1 & 2 & 3 & 4 \\
+			\hline
+			$T_n$ & 1 & 1 & 3 & 16 \\
+			\hline
+		\end{tabular}
+		\caption{Número de árvores rotuladas com $n$ vértices.}
+	\end{figure}
+
+	O leitor atento logo percebe que $16 = 4^2$. Isso é convite a escrever os demais resultados como potências de $n$. De fato, $3 = 3^1$, $1 = 2^0$ e $1 = 1^{-1}$. Portanto, seria um palpite bastante agradável dizer que $T_n = n^{n-2}$.\par
+
+	\subsubquest Uma vez conhecida a definição de uma \textit{sequência de Prüfer} e analisando um conjunto $V$ de $n$ vértices indexados de $1$ até $n$ podemos construir uma sequência de $n - 2$ elementos (não necessariamente distintos) escolhendo uma dentre as $n$ opções dadas por $V$ para cada uma das $n - 2$ posições da sequência. A partir disso concluímos que o número de sequências geradas com $n$ elementos é:\par
+	
+		$$S_n = \underbrace{n \cdot n \cdot n \cdots n}_{n - 2 ~ \text{vezes}} = n^{n-2}$$
+		
+	\subsubsection*{Algoritmos de codificação de Prüfer}
+	
+	Antes de prosseguir para as duas demonstrações (itens \textbf{c)} e \textbf{d)}), vamos definir um par de funções, que chamaremos $\text{\textpsi}$ e $\text{\textpsi}^{-1}$. Idealmente temos que:\par
+
+	$$\text{\textpsi}\phantom{^{-1}}:~ \mathbb{T} \to \mathbb{S}$$
+	$$\text{\textpsi}^{-1}:~ \mathbb{S} \to \mathbb{T}$$
+	
+	Apresento, na página seguinte, algoritmos que cumprem os papéis de $\text{\textpsi}$ e $\text{\textpsi}^{-1}$, respectivamente. 
+	
+	\newpage
+	
+	\begin{algor}{Uma implementação de $\text{\textpsi}$}
+	def folhas(T(V, E)):
+		retorna {v para cada v em _v_(T) se _grau_(T, v) == 1}
+		
+	def prufer_seq(T(V, E)):
+		seja n <- |_v_(T)|       // Número de vértices em T
+		seja S[_max_(n - 2, 0)] // Vetor da sequência de Prüfer
+		
+		seja k <- 0
+		enquanto n > 2:
+			// Folha com menor rótulo em T
+			seja v <- _min_(folhas(T))
+			
+			// Único vizinho de v em T
+			seja w em _viz_(T, v)
+			
+			S[k] <- w
+			
+			// Remove o vértice v de T
+			T <- T - v
+			
+			k <- k + 1
+			n <- n - 1
+		retorna S
+	\end{algor}
+
+	\begin{algor}{Uma implementação de $\text{\textpsi}^{-1}$}
+	def àrvore_rotulada(S[n]):
+		seja n <- |S| + 2 // Comprimento da sequência S + 2
+		
+		seja V{} <- {v para cada v de 1 até n}
+		seja E{} // Conjunto vazio
+		
+		seja T(V, E) // Árvore em construção
+		
+		seja L[] <- [j para cada j de 1 até n] // Lista
+		
+		enquanto |L| > 2:
+			// Menor elemento em L que não está em S
+			seja v <- _min_(L - S)
+			// Primeiro elemento de S
+			seja w <- S[0]
+			
+			// Conecta v e w
+			T <- T + (v, w)
+			
+			L.remover(v)
+			S.remover(w)
+			
+		// Conecta os vértices restantes
+		T <- T + (L[0], L[1]) 
+		retorna T
+	\end{algor}
+
+	\newpage
+	
+	Analisando com atenção, percebe-se que cada operação do algoritmo de codificação possui um correspondente no de decodificação capaz de desfazê-la imediatamente. Com este argumento, mostramos que com o algoritmo proposto para $\text{\textpsi}^{-1}$ somos capazes de decodificar em uma árvore $T$ o código gerado pela mesma através do algoritmo que implementa $\text{\textpsi}$, ou seja, $[~\text{\textpsi}^{-1} \circ \text{\textpsi}~](T) = T$ para qualquer árvore $T$ em $\mathbb{T}$, assim como $[~\text{\textpsi} \circ \text{\textpsi}^{-1}~](s) = s$ para qualquer sequência em $\mathbb{S}$\par
+	
+	\subsubquest Queremos encontrar uma injeção de $\mathbb{T}$ em $\mathbb{S}$, isto é, uma função $f: \mathbb{T} \to \mathbb{S}$ tal que $x \neq y \implies f(x) \neq f(y)$. Sejam $P, Q \in \mathbb{T}$. Vamos supor por absurdo que $\text{\textpsi}$ não é injetiva, ou seja, $P \neq Q$ e $\text{\textpsi}(P) = \text{\textpsi}(Q)$. Aplicamos a função $\text{\textpsi}^{-1}$ dos dois lados da equação temos $\text{\textpsi}^{-1}(\text{\textpsi}(P)) = \text{\textpsi}^{-1}(\text{\textpsi}(Q)) \implies P = Q$. Um absurdo. Portanto, $\text{\textpsi}$ é injetiva.\par
+	
+	\subsubquest Seguindo raciocínio análogo, queremos uma injeção de $\mathbb{S}$ em $\mathbb{T}$. Sejam $p, q \in \mathbb{S}$. Vamos supor que $\text{\textpsi}$ não é injetiva, ou seja, $p \neq q$ e $\text{\textpsi}^{-1}(p) = \text{\textpsi}^{-1}(q)$. Então aplicamos $\text{\textpsi}$ dos dois lados da equação temos $\text{\textpsi}(\text{\textpsi}^{-1}(p)) = \text{\textpsi}(\text{\textpsi}^{-1}(q)) \implies p = q$. Uma contradição. Logo,
+	$\text{\textpsi}^{-1}$ é injetiva.\par
+	
+	Já sabíamos que $S_n = |\mathbb{S}|$. Com estes resultados, temos uma relação de bijeção entre $\mathbb{T}$ e $\mathbb{S}$, portanto $|\mathbb{T}| =  |\mathbb{S}|$ e, por fim, $T_n = S_n$.\par
 	
 	\begin{thebibliography}{10}
 		\bibitem{jayme:18} SZWARCFITER, Jayme Luiz, \textbf{Teoria Computacional de Grafos}, 1ª edição, Rio de Janeiro, 2018.

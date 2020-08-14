@@ -1,0 +1,138 @@
+\documentclass{homework}
+
+\usepackage{homework}
+\usepackage{enumitem}
+\usetikzlibrary{graphdrawing}
+\usegdlibrary{trees}
+
+\usetikzlibrary{graphs, graphs.standard, quotes}
+\usegdlibrary{force}
+
+\tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=6pt]
+
+\title{CPS740 - Prova 1}
+\author{Pedro Maciel Xavier}
+\register{116023847}
+
+\newcommand{\vertex}{\node[vertex]}
+
+\newcommand{\cqd}{%%
+	\ensuremath{\blacksquare}
+}
+
+\newcommand{\gvertex}[3]{%%
+	\node (#1) at (#2, #3) {};
+	\draw (#1) circle [radius=2pt];
+}
+
+\newcommand{\glink}[2]{%%
+	\draw [gray!30] (#1) -- (#2);
+}
+
+\begin{document}
+	
+	\maketitle
+	
+	\quest
+	
+	\begin{enumerate}[label=\textbf{\arabic*)}]
+		\item Se $G$ é 3-colorível, então $G$ possui um ciclo ímpar. \textbf{Verdadeiro.} \par
+		
+		O \textbf{Teorema 5.1}\cite{jayme:18} afirma que $\rchi(G) = \max\{\rchi(\alpha_{v, w}(G)), \rchi(\beta_{v, w}(G))\}$ quando, tendo $(v, w) \notin E(G)$, $\alpha_{v, w}(G)$ é o grafo obtido pela inclusão da aresta $(v, w)$ ao grafo $G$ e $\beta_{v, w}(G)$ é aquele obtido pela identificação do vértice $v$ com o vértice $w$. Segue do teorema que $\rchi(G)$ é o tamanho do menor grafo completo encontrado através das aplicações recursivas da relação acima. Vale lembrar que como condição de parada, temos que $ \rchi(G) = r$ se $G = K_r$. \par
+		
+		Como $\rchi(G) = 3$, podemos afirmar que $G$ possui ao menos uma clique $K_3$ como subgrafo e, portanto, um ciclo ímpar de tamanho 3. \par
+		
+		\item Seja $G(V_1 \cup V_2, E)$ um grafo bipartido conexo. Então o grafo complementar $G^{c}$ também é conexo. \textbf{Falso.} \par
+		
+		Como $V_1$ e $V_2$ são conjuntos independentes, é evidente que o grafo complementar contará com duas cliques, formadas pelos vértices de $V_1$ e $V_2$, respectivamente. \par
+		
+		\shorthandoff{"}
+		\begin{figure}[H]
+			\centering
+			\input{cps740-p1-t1.tikz}
+			\caption{O Grafo $G(V_1 \cup V_2, E) = K_{|V_1|, |V_2|}$ e seu complemento $G^{c}$}
+			\label{fig:1.2.1}
+		\end{figure}
+		\shorthandon{"}
+		
+		No entanto, no caso do grafo bipartido completo $K_{|V_1|, |V_2|}$ temos que seu complemento não possui nenhuma aresta que ligue um vértice de $V_1$ a algum outro em $V_2$. Temos assim um contraexemplo. \par
+		
+	\item Se retirarmos uma aresta qualquer do grafo $K_{3,3}$, o grafo resultante é planar. \textbf{Verdadeiro.} \par
+	
+	O \textbf{Teorema 2.7}\cite{jayme:18} afirma que um grafo é planar se e somente se não possuir nenhum subgrafo que seja uma subdivisão de $K_5$ ou $K_{3,3}$. A subdivisão de um grafo $G$ consiste em inserir um vértice $u \notin V(G)$ ao grafo após a remoção de uma aresta $(v, w) \in E(G)$ seguida da adição das arestas $(v, u)$ e $(u, w)$. \par
+	
+	Seja $\pi_{v, w}(G)$ uma subdivisão do grafo $G$ através da aresta $(v, w)$. Sabemos, pela construção deste processo, que $|V(\pi_{v, w}(G))| = |V(G)| + 1$ e que $|E(\pi_{v, w}(G))| = |E(G)| + 1$. Conclui-se que, sendo $\pi(G)$ uma subdivisão qualquer de $G$, temos que $|E(\pi(G))| \ge |E(G)|$. Seja $G$ o grafo obtido removendo uma aresta de $K_{3, 3}$, temos que todo subgrafo $H$ de $G$ possui $|E(H)| \le |E(G)|$. Como $|H(G)| \le |E(G)| < |E(K_{3, 3})|$, é claro que nenhum subgrafo $H$ de $G$ é subdivisão de $K_{3, 3}$. \par
+	
+	Da mesma forma, nenhum subgrafo próprio de $K_{3, 3}$ é capaz de conter uma subdivisão de $K_5$, já que pra isso é necessário possuir ao menos 5 vértices de grau 5. Portanto, qualquer grafo $G = K_{3, 3} - (v, w)$ tal que $(v, w) \in E(K_{3, 3})$ é planar. \par
+	
+	\shorthandoff{"}
+	\begin{figure}[H]
+		\centering
+		\input{cps740-p1-t3.tikz}
+		\caption{Um grafo bipartido planar}
+		\label{fig:1.3.1}
+	\end{figure}
+	\shorthandon{"}
+	
+	Outro raciocínio possível seria verificar pela remoção de uma das arestas que se obtêm um grafo planar. Em seguida, basta observar que todos os grafos obtidos pela remoção de uma aresta de $K_{3, 3}$ são isomorfos e, portanto, planares. \par
+	
+	\item Seja $f$ um isomorfismo de um grafo $G$ para um grafo $H$, e seja $w$ um vértice em $G$. O grau de $w$ em $G$ é igual ao grau de $f(w)$ em $H$. \textbf{Verdadeiro.} \par
+	
+	Dados dois grafos, $G$ e $H$, dizemos que $G \cong H$ se $\exists f : V(G) \to V(H)$ tal que
+		\begin{align}
+			(w, v) \in E(G) \iff (f(w), f(v)) \in E(H)
+		\end{align}
+	Satisfeito, $f$ é dito um isomorfismo entre $G$ e $H$. Sabemos, portanto, que para um vértice qualquer $w \in V(G)$ tendo $f(w) \in V(H)$,
+		\begin{align}
+		\text{Seja } \mathbb{I}_{\Omega}\{\omega\} &\triangleq \begin{cases}
+		1 \text{ se } \omega \in \Omega\\
+		0 \text{ caso contrário}
+		\end{cases} \nonumber \\
+		~ \nonumber \\
+		\text{grau}(w) &= \sum_{v \in V(G)} \mathbb{I}_{E(G)}\{(w, v)\}\\
+					   &= \sum_{f(v) \in V(H)} \mathbb{I}_{E(H)}\{(f(w), f(v))\}\\
+					   &= \text{grau}(f(w)) & \cqd \nonumber
+		\end{align}
+	De $(2)$ para $(3)$ utilizamos a relação $(1)$, extraída da definição de isomorfismo em grafos presente no Capítulo 2 do livro\cite{jayme:18}.
+	
+	\item O Grafo abaixo é planar: \textbf{Falso.} \par
+	
+	Seja $\pi(G)$ uma subdivisão qualquer de $G$. Invocando mais uma vez o \textbf{Teorema 2.7}\cite{jayme:18}, vamos buscar por subdivisões de $K_5$ e $K_{3, 3}$ no grafo. Certamente não há nenhuma instância de $\pi(K_5)$, visto que só existe um vértice que possui grau maior ou igual a $5$, quando são necessários ao menos $5$.
+	
+	\shorthandoff{"}
+	\begin{figure}[H]
+		\centering
+		\input{cps740-p1-t2.tikz}
+		\caption{Um Grafo que, infelizmente, não é planar.}
+		\label{fig:1.5.1}
+	\end{figure}
+	\shorthandon{"}
+	
+	No entanto, encontramos uma subdivisão de $K_{3, 3}$ e podemos afirmar que o grafo não é planar.
+	
+	\item Todo hipercubo de dimensão $n$, $n \ge 1$, possui ciclo Hamiltoniano. \textbf{Verdadeiro.}
+	
+	Seja $\mathscr{H}_n$ o $n$-ésimo hipercubo, um grafo com $2^n$ vértices de grau $n$. \par
+	
+	Para construir $\mathscr{H}_k$, precisamos de duas cópias $G$, $H$ de $\mathscr{H}_{k-1}$.
+
+	\shorthandoff{"}
+	\begin{figure}[H]
+		\centering
+		\input{cps740-p1-t4.tikz}
+		\caption{A construção de um Hipercubo}
+		\label{fig:1.6.1}
+	\end{figure}
+	\shorthandon{"}	
+	
+		
+	\end{enumerate}
+
+	\quest Vamos supor que utilizamos $r_1$ cores em uma coloração ótima para $G_1$ e que precisamos de $r_2$ cores para colorir $G_2$.
+	
+	\quest
+	\begin{thebibliography}{10}
+		\bibitem{jayme:18} SZWARCFITER, Jayme Luiz, \textbf{Teoria Computacional de Grafos}, 1ª edição, Rio de Janeiro, 2018.
+	\end{thebibliography}
+	
+\end{document}
