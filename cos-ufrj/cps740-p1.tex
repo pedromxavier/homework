@@ -157,7 +157,7 @@
 
 	\end{enumerate}
 
-	\quest Vamos supor que utilizamos $r_1$ cores em uma coloração ótima para $G_1$ e que precisamos de $r_2$ cores para colorir $G_2$. Seja $r = \max \{r_1, r_2\} = \max\{\rchi(G_1), \rchi(G_2)\}$. Assim, vamos usar no máximo $r$ cores para pintar os dois grafos separadamente. \par
+	\quest Vamos supor que utilizamos $r_1$ cores em uma coloração ótima para $G_1$ e que precisamos de ao menos $r_2$ cores para colorir $G_2$. Seja $r = \max \{r_1, r_2\} = \max\{\rchi(G_1), \rchi(G_2)\}$, vamos usar no máximo $r$ cores para pintar os dois grafos separadamente. \par
 	
 	Sejam $C_1 : V(G_1) \to [r], C_2 : V(G_2) \to [r]$ colorações para os vértices de $G_1$ e $G_2$, respectivamente. Chamaremos $G = \sigma_{v, w}(G_1, G_2)$ o grafo resultante da identificação dos vértices $v \in V(G_1)$ e $w \in V(G_2)$, escolhidos ao acaso, em um único vértice $s \in V(G)$. Diante dessas informações temos os seguintes casos possíveis: \par
 	
@@ -165,7 +165,7 @@
 	\begin{figure}[H]
 		\centering
 		\input{cps740-p1-t6.tikz}
-		\caption{Amor de grafo, 2020, óleo sobre tela.}
+		\caption{Coloração ótima de cada grafo.}
 		\label{fig:2.1}
 	\end{figure}
 	\shorthandon{"}
@@ -188,14 +188,13 @@
 		\end{figure}
 		\shorthandon{"}
 		
-		Neste caso fica claro que a imagem de $C$ é $[r]$, visto que as possíveis cores são aquelas usadas em $C_1$ e $C_2$, já que $r^{\ast}$ também se inclui neste conjunto.\par
 		
-		\item Caso $C_1(v) \neq C_1(w)$, vamos construir uma coloração alternativa $C_2'$ para $G_2$. Queremos que $C_2(w)' = C_1(v)$.
+		\item Caso $C_1(v) \neq C_1(w)$, vamos construir uma coloração alternativa $C_2'$ para $G_2$. Queremos que $C_2(w)' = C_1(v)$. Vamos, portanto, colorir os vértices cuja cor é a mesma de $v$ com a cor de $w$, a medida que colorimos aqueles que tem a cor de $w$ com a cor de $v$. \par
 		
 		$$C_2'(u) \triangleq \begin{cases}
-		C_1(u) \text{ se } u \in V(G_1)\\
-		C_2(u) \text{ se } u \in V(G_2)\\
-		r^{\ast} \text{ caso contrário}
+		C_2(v) \text{ se } C_2(u) = C_2(w)\\
+		C_2(w) \text{ se } C_2(u) = C_2(v)\\
+		C_2(u) \text{ caso contrário}
 		\end{cases}$$
 		
 		\shorthandoff{"}
@@ -206,6 +205,8 @@
 			\label{fig:2.3}
 		\end{figure}
 		\shorthandon{"}
+		
+		A coloração $C$ é construída pelo mesmo método do caso {I.}, mas desta vez a partir de $C_1$ e $C_2'$.
 		
 	\end{enumerate}
 	
