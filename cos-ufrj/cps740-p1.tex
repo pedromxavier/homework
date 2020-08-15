@@ -2,6 +2,7 @@
 
 \usepackage{homework}
 \usepackage{enumitem}
+
 \usetikzlibrary{graphdrawing}
 \usegdlibrary{trees}
 
@@ -20,14 +21,26 @@
 	\ensuremath{\blacksquare}
 }
 
-\newcommand{\gvertex}[3]{%%
-	\node (#1) at (#2, #3) {};
-	\draw (#1) circle [radius=2pt];
+\newcommand{\gvertex}[4][]{%%
+	\node (#2) at (#3, #4) {};
+	\draw [#1] (#2) circle [radius=2pt];
 }
 
-\newcommand{\glink}[2]{%%
-	\draw [gray!30] (#1) -- (#2);
+\newcommand{\glink}[3][gray!30]{%%
+	\draw [#1] (#2) -- (#3);
 }
+
+\usepackage{pgfplots}
+
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+\tikzset{
+	expand bubble/.style={
+		preaction={draw},
+		draw,
+	},
+}
+
 
 \begin{document}
 	
@@ -38,7 +51,7 @@
 	\begin{enumerate}[label=\textbf{\arabic*)}]
 		\item Se $G$ é 3-colorível, então $G$ possui um ciclo ímpar. \textbf{Verdadeiro.} \par
 		
-		O \textbf{Teorema 5.1}\cite{jayme:18} afirma que $\rchi(G) = \max\{\rchi(\alpha_{v, w}(G)), \rchi(\beta_{v, w}(G))\}$ quando, tendo $(v, w) \notin E(G)$, $\alpha_{v, w}(G)$ é o grafo obtido pela inclusão da aresta $(v, w)$ ao grafo $G$ e $\beta_{v, w}(G)$ é aquele obtido pela identificação do vértice $v$ com o vértice $w$. Segue do teorema que $\rchi(G)$ é o tamanho do menor grafo completo encontrado através das aplicações recursivas da relação acima. Vale lembrar que como condição de parada, temos que $ \rchi(G) = r$ se $G = K_r$. \par
+		O \textbf{Teorema 5.1}\cite{jayme:18} afirma que $\rchi(G) = \min\{\rchi(\alpha_{v, w}(G)), \rchi(\beta_{v, w}(G))\}$ quando, tendo $(v, w) \notin E(G)$, $\alpha_{v, w}(G)$ é o grafo obtido pela inclusão da aresta $(v, w)$ ao grafo $G$ e $\beta_{v, w}(G)$ é aquele obtido pela identificação do vértice $v$ com o vértice $w$. Segue do teorema que $\rchi(G)$ é o tamanho do menor grafo completo encontrado através das aplicações recursivas da relação acima. Vale lembrar que como condição de parada, temos que $ \rchi(G) = r$ se $G = K_r$. \par
 		
 		Como $\rchi(G) = 3$, podemos afirmar que $G$ possui ao menos uma clique $K_3$ como subgrafo e, portanto, um ciclo ímpar de tamanho 3. \par
 		
@@ -110,11 +123,11 @@
 	
 	No entanto, encontramos uma subdivisão de $K_{3, 3}$ e podemos afirmar que o grafo não é planar.
 	
-	\item Todo hipercubo de dimensão $n$, $n \ge 1$, possui ciclo Hamiltoniano. \textbf{Verdadeiro.}
+	\item Todo hipercubo de dimensão $n$, $n \ge 1$, possui ciclo Hamiltoniano. \textbf{Falso.}
 	
 	Seja $\mathscr{H}_n$ o $n$-ésimo hipercubo, um grafo com $2^n$ vértices de grau $n$. \par
 	
-	Para construir $\mathscr{H}_k$, precisamos de duas cópias $G$, $H$ de $\mathscr{H}_{k-1}$.
+	Construímos $\mathscr{H}_k$ utilizando duas cópias de $\mathscr{H}_{k-1}$, notadamente $\mathscr{H}_{k-1}$ e $\mathscr{H}_{k-1}'$, ligando os vértices das duas componentes através da adição de arestas $(w, f(w)), w \in \mathscr{H}_{k-1}, f(w) \in \mathscr{H}_{k-1}'$ definidas pelo isomorfismo trivial $f:\mathscr{H}_{k-1}\to\mathscr{H}_{k-1}'$. O processo é ilustrado pela figura \ref{fig:1.6.1}. \par
 
 	\shorthandoff{"}
 	\begin{figure}[H]
@@ -123,12 +136,78 @@
 		\caption{A construção de um Hipercubo}
 		\label{fig:1.6.1}
 	\end{figure}
-	\shorthandon{"}	
+	\shorthandon{"}
+
+	Assim, o método descrito acima, que constrói e define a família de grafos $\mathscr{H} = \{\mathscr{H}_{k} : k \in \mathbb{N}\}$, pode ser descrito de maneira aritmética e geométrica para além da intuição topológica presente na figura.\par
 	
-		
+	Comecemos com o conjunto de vértices $\mathscr{V}_1 = \{0, 1\}$ representados por vetores binários de tamanho $1$. Para obter o conjunto $\mathscr{V}_k = V(\mathscr{H}_k)$, basta calcular $\mathscr{V}_k = \mathscr{V}_{k-1} \times \mathscr{V}_1$. O conjunto $E(\mathscr{H}_n)$ de arestas do hipercubo é definido por $\mathscr{E}_n = \{(v, w) : v, w \in \mathscr{V}_n, v \oplus w = 2^{m}, m \in \mathbb{N} \cup \{0\}\}$, onde $x \oplus y$ denota a operação \texttt{xor} (ou-exclusivo) \textit{bit}-a-\textit{bit}. Esta representação é útil pois indica uma imersão natural dos vértices de $\mathscr{V}_n$ em $[0, 1]^{n} \subseteq\mathbb{R}^n$.\par
+
+	Vamos utilizar como caso base de indução o hipercubo $\mathscr{H}_2$, que é um ciclo hamiltoniano por si só. Como passo de indução, supomos que um hipercubo $\mathscr{H}_{k-1}$ possui um ciclo hamiltoniano $\mathscr{C}_{k-1}$ do qual uma aresta $(v, w)$ faz parte. Fazemos uma cópia $\mathscr{H}_{k-1}'$ de $\mathscr{H}_{k-1}$ para construir $\mathscr{H}_{k}$ segundo o processo já explicitado. Para compor o ciclo $\mathscr{C}_k$, vamos remover a aresta $(v, w)$ de $\mathscr{C}_{k-1}$ assim como a aresta $(v', w')$ de $\mathscr{C}_{k-1}'$ (ciclo Hamiltoniano em $\mathscr{H}_{k-1}'$). Por fim, adicionamos as arestas $(v, v')$ e $(w, w')$ ao subgrafo $\mathscr{C}_{k-1} \cup \mathscr{C}_{k-1}'$ para obter $\mathscr{C}_{k}$. \par
+
+	\shorthandoff{"}
+	\begin{figure}[H]
+		\centering
+		\input{cps740-p1-t5.tikz}
+		\caption{Ciclo Hamiltonianos em Hipercubos}
+		\label{fig:1.6.2}
+	\end{figure}
+	\shorthandon{"}
+	
+	Com este argumento, fica demonstrado que todo hipercubo $\mathscr{H}_{n}, n \ge 2$ possui ciclo Hamiltoniano. No entanto, isso não vale para $n = 1$, já que $\mathscr{H}_{1}$ possui apenas $2$ vértices e não é capaz de conter ciclos. \par
+
 	\end{enumerate}
 
-	\quest Vamos supor que utilizamos $r_1$ cores em uma coloração ótima para $G_1$ e que precisamos de $r_2$ cores para colorir $G_2$.
+	\quest Vamos supor que utilizamos $r_1$ cores em uma coloração ótima para $G_1$ e que precisamos de $r_2$ cores para colorir $G_2$. Seja $r = \max \{r_1, r_2\} = \max\{\rchi(G_1), \rchi(G_2)\}$. Assim, vamos usar no máximo $r$ cores para pintar os dois grafos separadamente. \par
+	
+	Sejam $C_1 : V(G_1) \to [r], C_2 : V(G_2) \to [r]$ colorações para os vértices de $G_1$ e $G_2$, respectivamente. Chamaremos $G = \sigma_{v, w}(G_1, G_2)$ o grafo resultante da identificação dos vértices $v \in V(G_1)$ e $w \in V(G_2)$, escolhidos ao acaso, em um único vértice $s \in V(G)$. Diante dessas informações temos os seguintes casos possíveis: \par
+	
+	\shorthandoff{"}
+	\begin{figure}[H]
+		\centering
+		\input{cps740-p1-t6.tikz}
+		\caption{Amor de grafo, 2020, óleo sobre tela.}
+		\label{fig:2.1}
+	\end{figure}
+	\shorthandon{"}
+	
+	\begin{enumerate}[label=\Roman*.]
+		\item Se $C_1(v) = C_2(w) = r^{\ast} \in [r]$, podemos identificar os vértices sem alterar a coloração de cada grafo. Isto é, construir a coloração $C : V(G) \to [r]$ através de $C_1$ e $C_2$: \par
+		
+		$$C(u) \triangleq \begin{cases}
+		C_1(u) \text{ se } u \in V(G_1)\\
+		C_2(u) \text{ se } u \in V(G_2)\\
+		r^{\ast} \text{ caso contrário}
+		\end{cases}$$
+		
+		\shorthandoff{"}
+		\begin{figure}[H]
+			\centering
+			\input{cps740-p1-t7.tikz}
+			\caption{Identificação de vértices de mesma cor.}
+			\label{fig:2.2}
+		\end{figure}
+		\shorthandon{"}
+		
+		Neste caso fica claro que a imagem de $C$ é $[r]$, visto que as possíveis cores são aquelas usadas em $C_1$ e $C_2$, já que $r^{\ast}$ também se inclui neste conjunto.\par
+		
+		\item Caso $C_1(v) \neq C_1(w)$, vamos construir uma coloração alternativa $C_2'$ para $G_2$. Queremos que $C_2(w)' = C_1(v)$.
+		
+		$$C_2'(u) \triangleq \begin{cases}
+		C_1(u) \text{ se } u \in V(G_1)\\
+		C_2(u) \text{ se } u \in V(G_2)\\
+		r^{\ast} \text{ caso contrário}
+		\end{cases}$$
+		
+		\shorthandoff{"}
+		\begin{figure}[H]
+			\centering
+			\input{cps740-p1-t8.tikz}
+			\caption{Identificação de vértices de cores distintas.}
+			\label{fig:2.3}
+		\end{figure}
+		\shorthandon{"}
+		
+	\end{enumerate}
 	
 	\quest
 	\begin{thebibliography}{10}
