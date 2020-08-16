@@ -1,45 +1,10 @@
 \documentclass{homework}
 
 \usepackage{homework}
-\usepackage{enumitem}
-
-\usetikzlibrary{graphdrawing}
-\usegdlibrary{trees}
-
-\usetikzlibrary{graphs, graphs.standard, quotes}
-\usegdlibrary{force}
-
-\tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=6pt]
 
 \title{CPS740 - Prova 1}
 \author{Pedro Maciel Xavier}
 \register{116023847}
-
-\newcommand{\vertex}{\node[vertex]}
-
-\newcommand{\cqd}{%%
-	\ensuremath{\blacksquare}
-}
-
-\newcommand{\gvertex}[4][]{%%
-	\node (#2) at (#3, #4) {};
-	\draw [#1] (#2) circle [radius=2pt];
-}
-
-\newcommand{\glink}[3][gray!30]{%%
-	\draw [#1] (#2) -- (#3);
-}
-
-\usepackage{pgfplots}
-
-\pgfdeclarelayer{background}
-\pgfsetlayers{background,main}
-\tikzset{
-	expand bubble/.style={
-		preaction={draw},
-		draw,
-	},
-}
 
 
 \begin{document}
@@ -116,7 +81,7 @@
 	\begin{figure}[H]
 		\centering
 		\input{cps740-p1-t2.tikz}
-		\caption{Um Grafo que, infelizmente, não é planar.}
+		\caption{Grafo que não é planar pois esconde em si o $K_{3,3}$.}
 		\label{fig:1.5.1}
 	\end{figure}
 	\shorthandon{"}
@@ -159,7 +124,7 @@
 
 	\quest Vamos supor que utilizamos $r_1$ cores em uma coloração ótima para $G_1$ e que precisamos de ao menos $r_2$ cores para colorir $G_2$. Seja $r = \max \{r_1, r_2\} = \max\{\rchi(G_1), \rchi(G_2)\}$, vamos usar no máximo $r$ cores para pintar os dois grafos separadamente. \par
 	
-	Sejam $C_1 : V(G_1) \to [r], C_2 : V(G_2) \to [r]$ colorações para os vértices de $G_1$ e $G_2$, respectivamente. Chamaremos $G = \sigma_{v, w}(G_1, G_2)$ o grafo resultante da identificação dos vértices $v \in V(G_1)$ e $w \in V(G_2)$, escolhidos ao acaso, em um único vértice $s \in V(G)$. Diante dessas informações temos os seguintes casos possíveis: \par
+	Sejam $C_1 : V(G_1) \to [r]\footnote{Notação para o conjunto dos números naturais até $n$, $[n] = \{1, 2, \dots, n\}$}, C_2 : V(G_2) \to [r]$ colorações para os vértices de $G_1$ e $G_2$, respectivamente. Chamaremos $G = \sigma_{v, w}(G_1, G_2)$ o grafo resultante da identificação dos vértices $v \in V(G_1)$ e $w \in V(G_2)$, escolhidos ao acaso, em um único vértice $s \in V(G)$. Diante dessas informações temos os seguintes casos possíveis: \par
 	
 	\shorthandoff{"}
 	\begin{figure}[H]
@@ -188,6 +153,13 @@
 		\end{figure}
 		\shorthandon{"}
 		
+		Dessa maneira, é garantido que não será necessária nenhuma cor que não esteja em $[r]$, ou seja, $\rchi(\sigma_{v, w}(G_1, G_2,)) \le r$.
+		
+		\textbf{Teorema}\\
+		Seja $H$ subgrafo de $G$, então $\rchi(H) \le \rchi(G)$
+		
+		\textbf{Prova}\\
+		Suponha que $G$ possui uma coloração ótima $ C : V(G) \to [\rchi(G)] $, basta aplicar a mesma coloração para $H$, e esta será também uma coloração válida para $H$. $\cqd$
 		
 		\item Caso $C_1(v) \neq C_1(w)$, vamos construir uma coloração alternativa $C_2'$ para $G_2$. Queremos que $C_2(w)' = C_1(v)$. Vamos, portanto, colorir os vértices cuja cor é a mesma de $v$ com a cor de $w$, a medida que colorimos aqueles que tem a cor de $w$ com a cor de $v$. \par
 		
@@ -206,11 +178,19 @@
 		\end{figure}
 		\shorthandon{"}
 		
-		A coloração $C$ é construída pelo mesmo método do caso {I.}, mas desta vez a partir de $C_1$ e $C_2'$.
+		A coloração $C$ é construída pelo mesmo método do caso {I.}, mas desta vez a partir de $C_1$ e $C_2'$. Recolorir o grafo segundo este método eventualmente introduz uma nova cor ao grafo recolorido, ao custo da exclusão de uma de suas cores, fazendo com que o número de cores utilizadas seja preservado.\par
+		
+		Portanto, este segundo caso é reduzido ao primeiro, para o qual já temos um argumento para afirmar que $\rchi(\sigma_{v, w}(G_1, G_2)) = \max \{\rchi(G_1), \rchi(G_2)\}$. \par
 		
 	\end{enumerate}
 	
-	\quest
+	\quest Seja $S \subseteq \mathbb{R}^2$ um conjunto de $n$ pontos sobre o plano.
+	
+	
+	
+	
+	
+	
 	\begin{thebibliography}{10}
 		\bibitem{jayme:18} SZWARCFITER, Jayme Luiz, \textbf{Teoria Computacional de Grafos}, 1ª edição, Rio de Janeiro, 2018.
 	\end{thebibliography}

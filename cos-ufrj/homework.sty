@@ -51,5 +51,20 @@
 	\pagebreak
 }
 
+%% Pgf - Tikz
+\usetikzlibrary{graphdrawing, graphs, graphs.standard, quotes}
+\usegdlibrary{trees, force}
+
+\tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=6pt]
+
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+\tikzset{
+	expand bubble/.style={
+		preaction={draw},
+		draw,
+	},
+}
+
 
 %% end of file

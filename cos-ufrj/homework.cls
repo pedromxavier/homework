@@ -11,9 +11,27 @@
 \RequirePackage[brazil]{babel}
 \RequirePackage{multicol}
 \RequirePackage{float}
-\RequirePackage{tikz}
-
+\RequirePackage{enumitem}
 \RequirePackage{textgreek}
+
+%% Pgf - Tikz
+\RequirePackage{tikz}
+\RequirePackage{pgfplots}
+
+\newcommand{\vertex}{\node[vertex]}
+
+\newcommand{\cqd}{%%
+	\ensuremath{\blacksquare}
+}
+
+\newcommand{\gvertex}[4][]{%%
+	\node (#2) at (#3, #4) {};
+	\draw [#1] (#2) circle [radius=2pt];
+}
+
+\newcommand{\glink}[3][gray!30]{%%
+	\draw [#1] (#2) -- (#3);
+}
 
 \setlength{\parindent}{0em}
 \setlength{\parskip}{1em}
