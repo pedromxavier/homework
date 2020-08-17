@@ -82,6 +82,9 @@
 \DeclareRobustCommand{\rchi}{{\mathpalette\irchi\relax}}
 \newcommand{\irchi}[2]{\raisebox{\depth}{$#1\chi$}} % inner command, used by \rchi
 
+\DeclareRobustCommand{\rsqrt}{{\mathpalette\irsqrt\relax}}
+\newcommand{\irsqrt}[2]{\raisebox{\depth}{$#1\sqrt{}$}} % inner command, used by \rchi
+
 \newcounter{algors}
 \setcounter{algors}{0}
 
@@ -94,7 +97,7 @@
 	stringstyle={\stringstyle},
 	keywordstyle={\keywordstyle},
 	morekeywords={%  
-		def, seja, enquanto, para, de, cada, em, se, retorna, continua, e, ou%
+		def, lambda, seja, sejam, enquanto, para, de, cada, em, se, retorna, continua, e, ou%
 	},
 	emphstyle={\emphstyle},
 	emph={%
@@ -147,6 +150,7 @@
 	{\_viz\_}{{{\emphstyle viz}}}3
 	{\_max\_}{{{\emphstyle max}}}3
 	{\_min\_}{{{\emphstyle min}}}3
+	{\_mergesort\_}{{{\emphstyle merge-sort}}}{9}
 	,
 }
 

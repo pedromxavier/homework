@@ -1,16 +1,50 @@
 \documentclass{homework}
 \usepackage{homework}
 \usepackage{xifthen}
+\usepackage{comment}
+\usepackage{mathtools}% 
 
 \title{CPS740 - Prova 1}
 \author{Pedro Maciel Xavier}
 \register{116023847}
+
+\newcommand{\wallpaper}[1]{%%
+	\tikz[remember picture,overlay] \node[opacity=0.3,inner sep=0pt] at (current page.center){\includegraphics[width=\paperwidth,height=\paperheight]{#1}};
+	\clearpage
+}
+
+\makeatletter
+\renewcommand{\maketitle}{%%
+	\hfill
+	\begin{center}
+		{\Huge\bfseries \@title\space} \\ \vspace{30pt}
+		{\huge \@author} \\ \vspace{5pt}
+		{\ttfamily\Large \@register\space} \\ \vspace{20pt}
+		{\Large \@date \space}
+	\end{center}
+	\hfill
+	\wallpaper{cps740-p1-wallpaper.png}
+}
+\makeatother
 
 \newtheorem*{theorem}{Teorema}
 
 \newtheorem*{supposition}{Suposição}
 
 \def\seed{2}
+
+\newcommand{\gsample}[3][100]{%%
+	\pgfmathsetseed{\seed} %% set seed
+	\foreach \z in {1,...,#1}
+	{
+		\pgfmathsetmacro{\x}{rand}
+		\pgfmathsetmacro{\y}{rand}
+		
+		\pgfmathsetmacro{\ncol}{(\x > 0) ? "red!30": "blue!30"}
+		
+		\draw [fill=\ncol] (\x * #2, \y * #3) circle (6pt);
+	}
+}
 
 \newcommand{\sample}[3][100]{%%
 	\pgfmathsetseed{\seed} %% set seed
@@ -58,11 +92,28 @@
 	\quest
 	
 	\begin{enumerate}[label=\textbf{\arabic*)}]
-		\item Se $G$ é 3-colorível, então $G$ possui um ciclo ímpar. \textbf{Verdadeiro.} \par
+		\item Se $G$ é 3-colorível, então $G$ possui um ciclo ímpar. \textbf{Falso.} \par
 		
+		Um grafo $G$ $k$-colorível é aquele para o qual existe uma $k$-coloração, isto é, uma função $\mathcal{C}: V(G) \to [r]\footnote{Notação para o conjunto dos números naturais até $n$, $[n] = \{1, 2, \dots, n\}$}$ tal que $(v, w) \in E(G) \implies \mathcal{C}(v) \neq \mathcal{C}(w)$.\par
+		
+		Como dito no livro-texto, colorir um grafo de $n$ vértices com $n$ cores é uma tarefa muito simples, basta colorir cada vértice com uma cor distinta. Assim, podemos dizer que todo grafo de $n$ vértices é $n$-colorível. Para construir um contraexemplo ao enunciado, basta colorir um grafo de $3$ vértices que não possua um ciclo, como no o caso do $K_{3}$.\par
+		
+		\shorthandoff{"}
+		\begin{figure}[H]
+			\centering
+			\input{cps740-p1-t0.tikz}
+			\caption{O Grafo $G(V_1 \cup V_2, E) = K_{|V_1|, |V_2|}$ e seu complemento $G^{c}$}
+			\label{fig:1.1.1}
+		\end{figure}
+		\shorthandon{"}
+		
+		Com este grafo, temos uma $3$-coloração e nenhum ciclo.
+		
+		\begin{comment}
 		O \textbf{Teorema 5.1}\cite{jayme:18} afirma que $\rchi(G) = \min\{\rchi(\alpha_{v, w}(G)), \rchi(\beta_{v, w}(G))\}$ quando, tendo $(v, w) \notin E(G)$, $\alpha_{v, w}(G)$ é o grafo obtido pela inclusão da aresta $(v, w)$ ao grafo $G$ e $\beta_{v, w}(G)$ é aquele obtido pela identificação do vértice $v$ com o vértice $w$. Segue do teorema que $\rchi(G)$ é o tamanho do menor grafo completo encontrado através das aplicações recursivas da relação acima. Vale lembrar que como condição de parada, temos que $ \rchi(G) = r$ se $G = K_r$. \par
 		
 		Como $\rchi(G) = 3$, podemos afirmar que $G$ possui ao menos uma clique $K_3$ como subgrafo e, portanto, um ciclo ímpar de tamanho 3. \par
+		\end{comment}
 		
 		\item Seja $G(V_1 \cup V_2, E)$ um grafo bipartido conexo. Então o grafo complementar $G^{c}$ também é conexo. \textbf{Falso.} \par
 		
@@ -242,7 +293,9 @@
 	
 	Uma abordagem simples para o problema consiste em verificar a distância entre cada um dos $\frac{n (n - 1)}{2}$ pares. No entanto, uma solução em $O(n^2)$ não nos interessa, mas sim uma que seja de ordem $O(n (\log n)^2)$. Procuramos, portanto, um processo ligeiramente melhor que a solução exaustiva. \par
 	
-	Uma ideia importante é tentar evitar que a busca realize comparações entre todos os pontos do plano. É desejável comparar apenas pontos que estiverem próximos. Uma maneira natural de fazer isso é dividindo o conjunto $S$ em duas partes iguais. A princípio, como os pontos podem estar dispostos de qualquer maneira, não temos como determinar uma linha divisória do ponto de vista geométrico. Vamos, contudo, separar $S$ de maneira que metade dos pontos estejam em $S_1$ e o restante em $S_2$. \par
+	\subsection*{Algoritmo}
+	
+	Uma ideia importante é tentar evitar que a busca realize comparações entre todos os pontos do plano. É desejável comparar apenas pontos que estiverem próximos. Uma maneira natural de fazer isso é dividindo o conjunto $S$ em duas partes iguais\cite{weerdt:16}. A princípio, como os pontos podem estar dispostos de qualquer maneira, não temos como determinar uma linha divisória do ponto de vista geométrico. Vamos, contudo, separar $S$ de maneira que metade dos pontos estejam em $S_1$ e o restante em $S_2$. \par
 	
 	\shorthandoff{"}
 	\begin{figure}[H]
@@ -264,7 +317,7 @@
 	\end{figure}
 	\shorthandon{"}
 	
-	Temos até aqui um método muito interessante e que há de se mostrar eficaz em breve. No entanto, estamos deixando escapar uma questão relevante. Na fronteira entre $S_1$ e $S_2$, é provável que exista um par de pontos $p, q$ com $||p - q|| < \min\{\delta(S_1), \delta(S_2)\}$. Isso nos faz atentar para a necessidade de avaliar ainda um terceiro conjunto, compreendido numa faixa de largura $2 \delta(S)$ ao redor da fronteira entre os conjuntos.
+	Temos até aqui um método muito interessante e que há de se mostrar eficaz em breve. No entanto, estamos deixando escapar uma questão relevante. Na fronteira entre $S_1$ e $S_2$, é provável que exista um par de pontos $p, q$ com $||p - q|| < \min\{\delta(S_1), \delta(S_2)\}$. Isso nos faz atentar para a necessidade de avaliar ainda um terceiro conjunto, compreendido numa faixa de largura $2 \delta(S)$ ao redor da fronteira entre os conjuntos.\par
 	
 	\shorthandoff{"}
 	\begin{figure}[H]
@@ -275,8 +328,76 @@
 	\end{figure}
 	\shorthandon{"}
 	
+	O cálculo do par mais próximo em cada metade faz com que não seja preciso comparar pontos que estão no mesmo conjunto durante a verificação ao centro. Logo, só precisamos calcular as distâncias entre pontos de conjuntos diferentes.
+	
+	\shorthandoff{"}
+	\begin{figure}[H]
+		\centering
+		\input{cps740-p1-t12.tikz}
+		\caption{Faixa central.}
+		\label{fig:3.4}
+	\end{figure}
+	\shorthandon{"}
+	
+	\begin{theorem}
+		Em um retângulo de lados $r$ e $2r$ cabem, no máximo, $8$ pontos cuja distância entre si é pelo menos $r$.
+	\end{theorem}
+
+	\begin{proof}
+		Dividimos um retângulo de lados $r$ e $2r$ em $8$ quadrados cujo lado mede $\frac{r}{2}$.\par
+		
+		\shorthandoff{"}
+		\begin{figure}[H]
+			\centering
+			\input{cps740-p1-t13.tikz}
+			\caption{Faixa central.}
+			\label{fig:3.5}
+		\end{figure}
+		\shorthandon{"}
+		
+		Pelo \textit{Princípio da Gaiola de Pombos}, se temos $8$ quadrados (gaiolas) e mais do que $8$ pontos (pombos), então um dos quadrados necessariamente contém mais do que um ponto. Se dois pontos ou mais se encontram em uma mesmo quadrado, então a distância entre eles deve ser menor ou igual a $\frac{r}{\sqrt{2}} < r$.\par
+	\end{proof}
+
+	O resultado do teorema nos dá uma vantagem importante durante o cálculo da distância mínima na região central. Ordenando estes pontos segundo sua coordenada em $y$, teremos o valor desejado ao verificar somente os $8$ próximos pontos na sequência, pois temos a garantia de que não encontraremos distância menor que $\delta$ se não a encontramos entre estes $8$ primeiros. Esta simples observação torna o processo trivial de verificação, apresentado como $O(n^2)$ em um método linear $O(n)$, já que a verificação pode ser feita em tempo constante $O(8) = O(1)$ para cada ponto na faixa central.\par
+	
+	\subsection*{Análise da Complexidade}
+	
+	Partindo de um conjunto $S$ de tamanho $n$, precisamos ordená-lo pelas suas coordenadas $x$ e $y$, obtendo dois vetores que contêm os mesmos pontos, mas em ordens provavelmente distintas. O custo de ordenação é {$O\left(n \log n\right)$}.\par
+	
+	Em seguida, temos uma chamada de custo {$T\left(n\right)$}, que separa os dois conjuntos de vértices e realiza chamadas recursivas sobre os dois grupos de tamanho $\frac{n}{2}$, agregando {$2 T\left(\frac{n}{2}\right)$} ao custo de $T\left(n\right)$. Além disso, $T\left(n\right)$ ainda conta com a seleção dos pontos que pertencem a faixa central. Queremos que estes pontos estejam ordenados pela coordenada $y$. Como isso foi feito no início do algoritmo, podemos simplesmente filtrar os pontos $p$ onde $|p_x - \hat{p}_x| < \delta$ vale. Isso é feito em tempo linear {$O\left(n\right)$}, já que visitamos cada um dos $n$ pontos do escopo atual. \textbf{Nota:} O ponto $\hat{p}$ é calculado no momento da divisão dos conjuntos (ordenados em $x$) e é o mais próximo do $\frac{n}{2}$-ésimo elemento da lista. Por fim, verificar a proximidade na fronteira entre os conjuntos apresenta custo {$O\left(n\right)$}, como instrui o teorema apresentado. O processo recursivo para quando temos menos do que $3$ pontos no conjunto. Com $2$ pontos, digamos $p$ e $q$, $\delta = ||p - q||.$ Com menos do que dois pontos $\delta = \infty$. Logo, {$T\left(2\right) = T\left(1\right) = 1$}. \par
+	
+	Agora, resolvemos a relação de recorrência  $T\left(n\right) = 2 T\left(\frac{n}{2}\right) + O\left(n\right) + O\left(n\right)$.\par
+	
+	\begin{align*}
+		T\left(n\right) &= 2 T\left(\frac{n}{2}\right) + O\left(n\right) + O\left(n\right) = 2 T\left(\frac{n}{2}\right) + O\left(n\right) \\
+		2 T\left(\frac{n}{2}\right) &= 2 \left(2 T\left(\frac{n}{4}\right) + O\left(\frac{n}{2}\right)\right) = 4 T\left(\frac{n}{4}\right) + O\left(n\right)\\
+		4 T\left(\frac{n}{4}\right) &= 4 \left(2 T\left(\frac{n}{8}\right) + O\left(\frac{n}{4}\right)\right) = 8 T\left(\frac{n}{8}\right) + O\left(n\right)\\
+		&~\vdots\\
+		2^{k-2} T\left(\frac{n}{2^{k-2}}\right) &= 2^{k-2} \left(2 T\left(\frac{n}{2^{k-1}}\right) + O\left(\frac{n}{2^{k-2}}\right)\right) = 2^{k-1} T\left(\frac{n}{2^{k-1}}\right) + O\left(n\right)\\
+		2^{k-1} T\left(\frac{n}{2^{k-1}}\right) &= 2^{k-1} \underbracket{T\left(2\right)}_{1} = 2^{k-1}\\
+	\end{align*}
+	para $k = \log n$. \par
+	
+	Somando todas as equações, os termos para os passos intermediários de $T(n)$ se cancelam, enquanto as operações de tempo linear $O(n)$ se acumulam.\par
+	
+	\pagebreak
+	
+	\begin{align*}
+		T\left(n\right) &= 2^{k-1} + O(n) (k - 1)\\
+						&= 2^{\log n - 1} + O(n) (\log n - 1)\\
+						&= \frac{n}{2} + O(n) (\log n - 1)\\
+						&= O(n) + O(n) (\log n - 1)\\
+						&= O(n) (\log n)\\
+						~\\
+		\therefore T\left(n\right)	&= O(n \log n)
+	\end{align*}
+	
+	Por fim, temos um custo inicial de ordenação $O(n \log n)$ seguido de um custo de busca da ordem $O(n \log n)$. Com isso, está demonstrado que o algoritmo é de tempo $O(n \log n)$ e, portanto é de tempo $O(n (\log n)^2)$.
+		
 	\begin{thebibliography}{10}
 		\bibitem{jayme:18} SZWARCFITER, Jayme Luiz, \textbf{Teoria Computacional de Grafos}, 1ª edição, Rio de Janeiro, 2018.
+		
+		\bibitem{weerdt:16} WEERDT, Mathijs de, \textbf{Algoritmiek: Divide and Conquer}, TU Delft, Holanda, 2016.
 	\end{thebibliography}
 	
 \end{document}
