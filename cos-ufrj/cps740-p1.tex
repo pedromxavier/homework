@@ -1,11 +1,55 @@
 \documentclass{homework}
-
 \usepackage{homework}
+\usepackage{xifthen}
 
 \title{CPS740 - Prova 1}
 \author{Pedro Maciel Xavier}
 \register{116023847}
 
+\newtheorem*{theorem}{Teorema}
+
+\newtheorem*{supposition}{Suposição}
+
+\def\seed{2}
+
+\newcommand{\sample}[3][100]{%%
+	\pgfmathsetseed{\seed} %% set seed
+	\foreach \z in {1,...,#1}
+	{
+		\pgfmathsetmacro{\x}{rand}
+		\pgfmathsetmacro{\y}{rand}
+		
+		\pgfmathsetmacro{\ncol}{(\x > 0) ? "red!30": "blue!30"}
+		
+		\draw [fill=\ncol] (\x * #2, \y * #3) circle (2pt);
+	}
+}
+
+\newcommand{\samplei}[3][100]{%%
+	\pgfmathsetseed{\seed} %% set seed
+	\foreach \z in {1,...,#1}
+	{
+		\pgfmathsetmacro{\x}{rand}
+		\pgfmathsetmacro{\y}{rand}
+		
+		\pgfmathsetmacro{\ncol}{(\x > 0) ? ((\x > 0.5) ? "red!30": "blue!30") : "gray!30"}
+		
+		\draw [fill=\ncol] (\x * #2, \y * #3) circle (2pt);
+	}
+}
+
+\newcommand{\isample}[3][100]{%%
+	\pgfmathsetseed{\seed} %% set seed
+	\foreach \z in {1,...,#1}
+	{
+		\pgfmathsetmacro{\x}{rand}
+		\pgfmathsetmacro{\y}{rand}
+		
+		\pgfmathsetmacro{\ncol}{(\x < 0) ? ((\x < -0.5) ? "blue!30": "red!30") : "gray!30"}
+		
+		\draw [fill=\ncol] (\x * #2, \y * #3) circle (2pt);
+	}
+}
 
 \begin{document}
 	
@@ -60,7 +104,11 @@
 		\begin{align}
 			(w, v) \in E(G) \iff (f(w), f(v)) \in E(H)
 		\end{align}
-	Satisfeito, $f$ é dito um isomorfismo entre $G$ e $H$. Sabemos, portanto, que para um vértice qualquer $w \in V(G)$ tendo $f(w) \in V(H)$,
+	Satisfeito, $f$ é dito um isomorfismo entre $G$ e $H$. Seja $w \in V(G)$ um vértice qualquer onde $f(w) \in V(H)$,
+	\begin{supposition}
+		$\text{grau}(w) = \text{grau}(f(w))$
+	\end{supposition}
+	\begin{proof}
 		\begin{align}
 		\text{Seja } \mathbb{I}_{\Omega}\{\omega\} &\triangleq \begin{cases}
 		1 \text{ se } \omega \in \Omega\\
@@ -69,9 +117,11 @@
 		~ \nonumber \\
 		\text{grau}(w) &= \sum_{v \in V(G)} \mathbb{I}_{E(G)}\{(w, v)\}\\
 					   &= \sum_{f(v) \in V(H)} \mathbb{I}_{E(H)}\{(f(w), f(v))\}\\
-					   &= \text{grau}(f(w)) & \cqd \nonumber
+					   &= \text{grau}(f(w)) & \nonumber
 		\end{align}
-	De $(2)$ para $(3)$ utilizamos a relação $(1)$, extraída da definição de isomorfismo em grafos presente no Capítulo 2 do livro\cite{jayme:18}.
+	\end{proof}
+
+	De $(2)$ para $(3)$ utilizamos a relação $(1)$, extraída da definição de isomorfismo em grafos presente no Capítulo 2 do livro\cite{jayme:18}. Utilizamos também o fato de que $V(H) \cong {f(v) : v \in V(G)}$, da definição de domínio do isomorfismo. \par
 	
 	\item O Grafo abaixo é planar: \textbf{Falso.} \par
 	
@@ -153,14 +203,18 @@
 		\end{figure}
 		\shorthandon{"}
 		
-		Dessa maneira, é garantido que não será necessária nenhuma cor que não esteja em $[r]$, ou seja, $\rchi(\sigma_{v, w}(G_1, G_2,)) \le r$.
+		Dessa maneira, para colorir $G = \sigma_{v, w}(G_1, G_2,)$ é garantido que não será necessária nenhuma cor que não esteja em $[r]$, ou seja, $\rchi(G) \le r$. \par
 		
-		\textbf{Teorema}\\
+		\begin{theorem}
 		Seja $H$ subgrafo de $G$, então $\rchi(H) \le \rchi(G)$
+		\end{theorem}
 		
-		\textbf{Prova}\\
-		Suponha que $G$ possui uma coloração ótima $ C : V(G) \to [\rchi(G)] $, basta aplicar a mesma coloração para $H$, e esta será também uma coloração válida para $H$. $\cqd$
-		
+		\begin{proof}
+		Encontramos uma coloração válida para $H$ ao supor que o grafo $G$ possui uma coloração ótima $ \mathcal{C} : V(G) \to [\rchi(G)] $. Aplicamos a mesma coloração sobre $H$, com a garantia de que vértices adjacentes possuem cores distintas. 
+		\end{proof}
+	
+		Pelo teorema acima, como $G_1$ e $G_2$ são subgrafos de $G = \sigma_{v, w}(G_1, G_2)$, é evidente que teremos tanto $\rchi(G) \ge \rchi(G_1)$ como $\rchi(G) \ge \rchi(G_2)$. Portanto, $\rchi(G) \ge \max\{\rchi(G_1), \rchi(G_2)\} = r$. Com $\rchi(G) \le r$ e $\rchi(G) \ge r$ concluímos que $\rchi(G) = r$.
+	
 		\item Caso $C_1(v) \neq C_1(w)$, vamos construir uma coloração alternativa $C_2'$ para $G_2$. Queremos que $C_2(w)' = C_1(v)$. Vamos, portanto, colorir os vértices cuja cor é a mesma de $v$ com a cor de $w$, a medida que colorimos aqueles que tem a cor de $w$ com a cor de $v$. \par
 		
 		$$C_2'(u) \triangleq \begin{cases}
@@ -184,12 +238,42 @@
 		
 	\end{enumerate}
 	
-	\quest Seja $S \subseteq \mathbb{R}^2$ um conjunto de $n$ pontos sobre o plano.
+	\quest Seja $S \subseteq \mathbb{R}^2$ um conjunto de $n$ pontos sobre o plano. Queremos encontrar os dois pontos mais próximos entre si. \par
 	
+	Uma abordagem simples para o problema consiste em verificar a distância entre cada um dos $\frac{n (n - 1)}{2}$ pares. No entanto, uma solução em $O(n^2)$ não nos interessa, mas sim uma que seja de ordem $O(n (\log n)^2)$. Procuramos, portanto, um processo ligeiramente melhor que a solução exaustiva. \par
 	
+	Uma ideia importante é tentar evitar que a busca realize comparações entre todos os pontos do plano. É desejável comparar apenas pontos que estiverem próximos. Uma maneira natural de fazer isso é dividindo o conjunto $S$ em duas partes iguais. A princípio, como os pontos podem estar dispostos de qualquer maneira, não temos como determinar uma linha divisória do ponto de vista geométrico. Vamos, contudo, separar $S$ de maneira que metade dos pontos estejam em $S_1$ e o restante em $S_2$. \par
 	
+	\shorthandoff{"}
+	\begin{figure}[H]
+		\centering
+		\input{cps740-p1-t9.tikz}
+		\caption{Dividir e conquistar.}
+		\label{fig:3.1}
+	\end{figure}
+	\shorthandon{"}
 	
+	Para tal, basta ordenar o conjunto com base na coordenada $x$ de cada ponto. Repetiremos o processo de subdivisão em cada hemisfério e diremos que a menor distância entre dois pontos no plano é o menor dos resultados encontrados para cada subconjunto. Chamaremos $\delta(S)$ a distância entre o par de pontos mais próximos em $S$. $\delta(S) = \min\{\delta(S_1), \delta(S_2)\}$. \par
 	
+	\shorthandoff{"}
+	\begin{figure}[H]
+		\centering
+		\input{cps740-p1-t10.tikz}
+		\caption{Dividir, dividir e conquistar.}
+		\label{fig:3.2}
+	\end{figure}
+	\shorthandon{"}
+	
+	Temos até aqui um método muito interessante e que há de se mostrar eficaz em breve. No entanto, estamos deixando escapar uma questão relevante. Na fronteira entre $S_1$ e $S_2$, é provável que exista um par de pontos $p, q$ com $||p - q|| < \min\{\delta(S_1), \delta(S_2)\}$. Isso nos faz atentar para a necessidade de avaliar ainda um terceiro conjunto, compreendido numa faixa de largura $2 \delta(S)$ ao redor da fronteira entre os conjuntos.
+	
+	\shorthandoff{"}
+	\begin{figure}[H]
+		\centering
+		\input{cps740-p1-t11.tikz}
+		\caption{Dividir e conquistar com cautela.}
+		\label{fig:3.3}
+	\end{figure}
+	\shorthandon{"}
 	
 	\begin{thebibliography}{10}
 		\bibitem{jayme:18} SZWARCFITER, Jayme Luiz, \textbf{Teoria Computacional de Grafos}, 1ª edição, Rio de Janeiro, 2018.

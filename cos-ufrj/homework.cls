@@ -2,7 +2,9 @@
 \ProvidesClass{homework}[2020/06/30 Homework LaTeX class]
 \LoadClass{article}
 
+\RequirePackage{amsthm}
 \RequirePackage{amsmath}
+\RequirePackage{ifthen}
 \RequirePackage{amssymb}
 \RequirePackage{mathrsfs}
 \RequirePackage{xcolor}
@@ -71,6 +73,10 @@
 
 \renewcommand{\vec}[1]{%%
 	\ensuremath{\mathbf{#1}}
+}
+
+\renewcommand{\qedsymbol}{%%
+	\ensuremath{\blacksquare}
 }
 
 \DeclareRobustCommand{\rchi}{{\mathpalette\irchi\relax}}
