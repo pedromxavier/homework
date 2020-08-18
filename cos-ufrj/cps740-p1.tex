@@ -1,35 +1,30 @@
 \documentclass{homework}
 \usepackage{homework}
-\usepackage{xifthen}
-\usepackage{comment}
-\usepackage{mathtools}% 
 
 \title{CPS740 - Prova 1}
 \author{Pedro Maciel Xavier}
 \register{116023847}
 
-\newcommand{\wallpaper}[1]{%%
-	\tikz[remember picture,overlay] \node[opacity=0.3,inner sep=0pt] at (current page.center){\includegraphics[width=\paperwidth,height=\paperheight]{#1}};
-	\clearpage
+\newcommand{\zodiac}[1]{%%
+	\begin{switch}{#1}
+		\case{1}{\capricornus}%%
+		\case{2}{\aquarius}%%
+		\case{3}{\pisces}%%
+		\case{4}{\aries}%%
+		\case{5}{\taurus}%%
+		\case{6}{\gemini}%%
+		\case{7}{\cancer}%%
+		\case{8}{\leo}%%
+		\case{9}{\virgo}%%
+		\case{10}{\libra}%%
+		\case{11}{\scorpio}%%
+		\case{12}{\sagittarius}%%
+	\end{switch}
 }
 
-\makeatletter
-\renewcommand{\maketitle}{%%
-	\hfill
-	\begin{center}
-		{\Huge\bfseries \@title\space} \\ \vspace{30pt}
-		{\huge \@author} \\ \vspace{5pt}
-		{\ttfamily\Large \@register\space} \\ \vspace{20pt}
-		{\Large \@date \space}
-	\end{center}
-	\hfill
-	\wallpaper{cps740-p1-wallpaper.png}
-}
-\makeatother
-
-\newtheorem*{theorem}{Teorema}
-
-\newtheorem*{supposition}{Suposição}
+%%\renewcommand{\thepage}{%%
+%	{\ttfamily{\zodiac{\value{page}}}}
+%}
 
 \def\seed{2}
 
@@ -87,27 +82,24 @@
 
 \begin{document}
 	
-	\maketitle
-	
+	\maketitle	
 	\quest
 	
 	\begin{enumerate}[label=\textbf{\arabic*)}]
 		\item Se $G$ é 3-colorível, então $G$ possui um ciclo ímpar. \textbf{Falso.} \par
 		
-		Um grafo $G$ $k$-colorível é aquele para o qual existe uma $k$-coloração, isto é, uma função $\mathcal{C}: V(G) \to [r]\footnote{Notação para o conjunto dos números naturais até $n$, $[n] = \{1, 2, \dots, n\}$}$ tal que $(v, w) \in E(G) \implies \mathcal{C}(v) \neq \mathcal{C}(w)$.\par
+		Um grafo $G$ $k$-colorível é aquele para o qual existe uma $k$-coloração, isto é, uma função $\mathcal{C}: V(G) \to [r]\footnote{Notação para o conjunto dos números naturais até $n$, $[n] = \{1, 2, \dots, n\}$}$ tal que $(v, w) \in E(G) \implies \mathcal{C}(v) \neq \mathcal{C}(w)$. Um grafo é $k$-colorível tem seu número cromático $\rchi(G) \le k$.\par
 		
-		Como dito no livro-texto, colorir um grafo de $n$ vértices com $n$ cores é uma tarefa muito simples, basta colorir cada vértice com uma cor distinta. Assim, podemos dizer que todo grafo de $n$ vértices é $n$-colorível. Para construir um contraexemplo ao enunciado, basta colorir um grafo de $3$ vértices que não possua um ciclo, como no o caso do $K_{3}$.\par
+		Como dito no livro-texto, colorir um grafo de $n$ vértices com $n$ cores é uma tarefa muito simples, basta colorir cada vértice com uma cor distinta. Assim, podemos dizer que todo grafo de $n$ vértices é $n$-colorível. Para construir um contraexemplo ao enunciado, basta colorir um grafo de $3$ vértices que não possua um ciclo como o do $K_{3}$.\par
 		
 		\shorthandoff{"}
 		\begin{figure}[H]
 			\centering
 			\input{cps740-p1-t0.tikz}
-			\caption{O Grafo $G(V_1 \cup V_2, E) = K_{|V_1|, |V_2|}$ e seu complemento $G^{c}$}
+			\caption{$3$-coloração sem ciclos sobre o Cianeto de Hidrogênio (CHN).}
 			\label{fig:1.1.1}
 		\end{figure}
 		\shorthandon{"}
-		
-		Com este grafo, temos uma $3$-coloração e nenhum ciclo.
 		
 		\begin{comment}
 		O \textbf{Teorema 5.1}\cite{jayme:18} afirma que $\rchi(G) = \min\{\rchi(\alpha_{v, w}(G)), \rchi(\beta_{v, w}(G))\}$ quando, tendo $(v, w) \notin E(G)$, $\alpha_{v, w}(G)$ é o grafo obtido pela inclusão da aresta $(v, w)$ ao grafo $G$ e $\beta_{v, w}(G)$ é aquele obtido pela identificação do vértice $v$ com o vértice $w$. Segue do teorema que $\rchi(G)$ é o tamanho do menor grafo completo encontrado através das aplicações recursivas da relação acima. Vale lembrar que como condição de parada, temos que $ \rchi(G) = r$ se $G = K_r$. \par
@@ -340,7 +332,7 @@
 	\shorthandon{"}
 	
 	\begin{theorem}
-		Em um retângulo de lados $r$ e $2r$ cabem, no máximo, $8$ pontos cuja distância entre si é pelo menos $r$.
+		Em um retângulo de lados $r$ e $2r$ cabem, no máximo, $8$ pontos cuja distância entre si é maior ou igual a $r$.
 	\end{theorem}
 
 	\begin{proof}
@@ -364,7 +356,7 @@
 	
 	Partindo de um conjunto $S$ de tamanho $n$, precisamos ordená-lo pelas suas coordenadas $x$ e $y$, obtendo dois vetores que contêm os mesmos pontos, mas em ordens provavelmente distintas. O custo de ordenação é {$O\left(n \log n\right)$}.\par
 	
-	Em seguida, temos uma chamada de custo {$T\left(n\right)$}, que separa os dois conjuntos de vértices e realiza chamadas recursivas sobre os dois grupos de tamanho $\frac{n}{2}$, agregando {$2 T\left(\frac{n}{2}\right)$} ao custo de $T\left(n\right)$. Além disso, $T\left(n\right)$ ainda conta com a seleção dos pontos que pertencem a faixa central. Queremos que estes pontos estejam ordenados pela coordenada $y$. Como isso foi feito no início do algoritmo, podemos simplesmente filtrar os pontos $p$ onde $|p_x - \hat{p}_x| < \delta$ vale. Isso é feito em tempo linear {$O\left(n\right)$}, já que visitamos cada um dos $n$ pontos do escopo atual. \textbf{Nota:} O ponto $\hat{p}$ é calculado no momento da divisão dos conjuntos (ordenados em $x$) e é o mais próximo do $\frac{n}{2}$-ésimo elemento da lista. Por fim, verificar a proximidade na fronteira entre os conjuntos apresenta custo {$O\left(n\right)$}, como instrui o teorema apresentado. O processo recursivo para quando temos menos do que $3$ pontos no conjunto. Com $2$ pontos, digamos $p$ e $q$, $\delta = ||p - q||.$ Com menos do que dois pontos $\delta = \infty$. Logo, {$T\left(2\right) = T\left(1\right) = 1$}. \par
+	Em seguida, temos uma chamada de custo {$T\left(n\right)$}, que separa os dois conjuntos de vértices e realiza chamadas recursivas sobre os dois grupos de tamanho $\frac{n}{2}$, agregando {$2 T\left(\frac{n}{2}\right)$} ao custo de $T\left(n\right)$. Além disso, $T\left(n\right)$ ainda conta com a seleção dos pontos que pertencem a faixa central. Queremos que estes pontos estejam ordenados pela coordenada $y$. Como isso foi feito no início do algoritmo, podemos simplesmente filtrar os pontos $p$ onde $|p_x - \hat{p}_x| < \delta$ vale. Isso é feito em tempo linear {$O\left(n\right)$}, já que visitamos cada um dos $n$ pontos do escopo atual. O ponto $\hat{p}$ é calculado no momento da divisão dos conjuntos (ordenados em $x$) e é o mais próximo do $\frac{n}{2}$-ésimo elemento da lista. Por fim, verificar a proximidade na fronteira entre os conjuntos apresenta custo {$O\left(n\right)$}, como instrui o teorema apresentado. O processo recursivo para quando temos menos do que $3$ pontos no conjunto. Com $2$ pontos, digamos $p$ e $q$, $\delta = ||p - q||.$ Com menos do que dois pontos $\delta = \infty$. Logo, {$T\left(2\right) = T\left(1\right) = 1$}. \par
 	
 	Agora, resolvemos a relação de recorrência  $T\left(n\right) = 2 T\left(\frac{n}{2}\right) + O\left(n\right) + O\left(n\right)$.\par
 	
@@ -399,5 +391,13 @@
 		
 		\bibitem{weerdt:16} WEERDT, Mathijs de, \textbf{Algoritmiek: Divide and Conquer}, TU Delft, Holanda, 2016.
 	\end{thebibliography}
+
+	\subsection*{Observações}
+	\begin{itemize}
+		\item As figuras procuram mais ilustrar os conceitos e ideias propostas do que representar os objetos de maneira geometricamente fiel.
+		\item A expressão $\log$ é utilizada para representar o logaritmo de base $2$, também escrito como $\log_2$.
+	\end{itemize}
 	
+	\newpage
+	\let\clearpage\relax
 \end{document}

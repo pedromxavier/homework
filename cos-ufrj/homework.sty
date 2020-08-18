@@ -52,9 +52,6 @@
 }
 
 %% Pgf - Tikz
-\usetikzlibrary{graphdrawing, graphs, graphs.standard, quotes}
-\usegdlibrary{trees, force}
-
 \tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=6pt]
 
 \pgfdeclarelayer{background}
@@ -64,6 +61,22 @@
 		preaction={draw},
 		draw,
 	},
+}
+
+\newenvironment{fig}[1][\empty]{%% in-code
+	\ifx#1\empty
+		\def\thiscaption{\unskip}%
+	\else
+		\def\thiscaption{\caption{#1}}%
+	\fi
+	\shorthandoff{"}
+	\begin{figure}[H]
+		\centering
+}{%% out-code
+		\thiscaption
+		\label{fig:\thequests.\thesubquests.\thesubsubquests}
+	\end{figure}
+	\shorthandon{"}
 }
 
 %% end of file

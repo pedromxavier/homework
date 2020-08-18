@@ -1,0 +1,73 @@
+\documentclass{homework}
+\usepackage{homework}
+
+\title{CPS740 - Lista 3}
+\author{Pedro Maciel Xavier}
+\register{116023847}
+
+
+\begin{document}
+	
+	\maketitle
+	
+	\quest %% 1
+	
+	\subsubquest 
+	\begin{fig}[Árvore geradora de uma BFS]
+	\input{cps740-3-0.tikz}
+	\end{fig}
+
+	\subsubquest 
+	\begin{fig}[Árvore geradora de uma DFS]
+		\input{cps740-3-1.tikz}
+	\end{fig}
+
+	\quest %% 2
+	
+	\subsubquest
+	
+	\begin{algor}{DFS}
+	def dfs(G, r):
+		// Pilha contendo a raiz da árvore geradora
+		seja S <- _pilha_({r})
+		
+		// Vetor de Retorno
+		seja n <- |_v_(G)|
+		seja R[n]
+		
+		enquanto |S| > 0:
+			seja w <- S.remover()
+			seja A <- _viz_(G, w)
+			
+			se |A| > 0:
+				para cada u em A:
+					se u.cor == 0:
+						u.cor <- 1
+						S.inserir(u)
+						R[u] <- w
+					senão:
+						continua
+			senão:
+				continua
+
+		retorna R
+	\end{algor}
+
+	\subsubquest
+	
+	\quest %% 3
+	
+	\quest %% 4
+	
+	\begin{fig}[Uma rede de fluxos]
+		\input{cps740-3-2.tikz}
+	\end{fig}
+	
+	\quest %% 5
+	
+	
+	
+	\begin{thebibliography}{10}
+		\bibitem{jayme:18} SZWARCFITER, Jayme Luiz, \textbf{Teoria Computacional de Grafos}, 1ª edição, Rio de Janeiro, 2018.
+	\end{thebibliography}
+\end{document}

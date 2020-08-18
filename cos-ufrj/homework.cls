@@ -2,9 +2,10 @@
 \ProvidesClass{homework}[2020/06/30 Homework LaTeX class]
 \LoadClass{article}
 
+\RequirePackage{comment}
+%\RequirePackage{wasysym}
 \RequirePackage{amsthm}
 \RequirePackage{amsmath}
-\RequirePackage{ifthen}
 \RequirePackage{amssymb}
 \RequirePackage{mathrsfs}
 \RequirePackage{xcolor}
@@ -15,10 +16,16 @@
 \RequirePackage{float}
 \RequirePackage{enumitem}
 \RequirePackage{textgreek}
+\RequirePackage{mathtools}% 
+\RequirePackage{ifthen}
+\RequirePackage{xifthen}
 
 %% Pgf - Tikz
 \RequirePackage{tikz}
 \RequirePackage{pgfplots}
+
+\usetikzlibrary{graphdrawing, graphs, graphs.standard, quotes}
+\usegdlibrary{force, trees}
 
 \newcommand{\vertex}{\node[vertex]}
 
@@ -166,6 +173,35 @@
 
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
+
+%% Define switch structure environment
+\newcommand{\ifequals}[3]{\ifthenelse{\equal{#1}{#2}}{#3}{}}
+\newcommand{\case}[2]{#1 #2} % Dummy, so \renewcommand has something to overwrite...
+\newenvironment{switch}[1]{\renewcommand{\case}{\ifequals{#1}}}{}
+
+%% Wallpaper
+\newcommand{\wallpaper}[1]{%%
+	\tikz[remember picture,overlay] \node[opacity=0.75,inner sep=0pt] at (current page.center){\includegraphics[width=\paperwidth,height=\paperheight]{#1}};
+}
+
+%% Centered maketitle
+\newcommand{\cmaketitle}{%%
+	\topskip0pt
+	\vspace*{\fill}
+	\begin{center}
+		{\Huge\bfseries \@title\space} \\ \vspace{30pt}
+		{\huge \@author} \\ \vspace{5pt}
+		{\ttfamily\Large \@register\space} \\ \vspace{20pt}
+		{\Large \@date \space}
+	\end{center}
+	\vspace*{\fill}
+	%%\wallpaper{cps740-p1-wallpaper.png}
+	\pagebreak
+}
+
+%% Theorem
+\newtheorem*{theorem}{Teorema}
+\newtheorem*{supposition}{Suposição}
 
 %% EOI
 \endinput
