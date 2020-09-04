@@ -7,6 +7,38 @@
 \setcounter{subquests}{0}
 \setcounter{subsubquests}{0}
 
+\newcommand{\drawstack}[3]{%%
+	\def\h{0.25}
+	\def\w{0.5}
+	
+	\def\dx{#2}
+	\def\dy{#3}
+	
+	\foreach \j [count=\hi from 0] in {#1}
+	{
+		\def\x{\dx}
+		\def\y{\h + 2 * \h * \hi + \dy}
+		\node [] at (\x, \y) {\j};
+		\draw [] (\x - \w, \y + \h) rectangle (\x + \w, \y - \h);
+	}
+}
+
+\newcommand{\drawqueue}[3]{%%
+	\def\h{0.5}
+	\def\w{0.25}
+	
+	\def\dx{#2}
+	\def\dy{#3}
+	
+	\foreach \j [count=\wi from 0] in {#1}
+	{
+		\def\x{-\w - 2 * \w * \wi + \dx}
+		\def\y{\dy}
+		\node [] at (\x, \y) {\j};
+		\draw [] (\x - \w, \y + \h) rectangle (\x + \w, \y - \h);
+	}
+}
+
 \renewcommand{\thesubquests}{%%
 	\roman{subquests}
 }
@@ -20,7 +52,12 @@
 	\setcounter{subquests}{0}
 	\setcounter{subsubquests}{0}
 	\newpage
-    {\Large\bfseries Questão \thequests#1} \\%%
+	\ifx#1\empty
+		\def\thisquest{\unskip}%
+	\else
+		\def\thisquest{.: {\normalfont#1}}%
+	\fi
+    {\Large\bfseries Questão \thequests\thisquest} \\%%
   
 }
 

@@ -1,0 +1,29 @@
+\documentclass{homework}
+\usepackage{homework}
+
+\title{CPS846 - Lista 1}
+\author{Pedro Maciel Xavier}
+\register{116023847}
+
+\begin{document}
+	
+	\maketitle
+	
+	\quest[Mostre que todo grafo G pode ser transformado em um grafo bipartido pela remoção de, no máximo, $|E(G)|/2$ arestas. Quantas arestas precisamos adicionar no grafo bipartido obtido para obtermos um grafo bipartido completo?] %% 1
+		
+	\quest[Prove que $ex(n, K_{s, t}) = O(n^{2 - \frac{1}{s}})$.] %% 2
+
+	
+	\quest[Seja $A$ um \textit{conjunto multiplicativo de Sidon}, i.e., um conjunto tal que $x, y, z, w \in A$ são tais que $x y = z w$ então $\{x, y\} = \{z, w\}$. Use $A$ para construir um grafo $G_A$ livre de $C_4$ tal que $|E(G_A)| \ge |A|$.] %% 3
+	
+	Seja $E = \{(a, b) : a \cdot b \in A\}$ o conjunto de arestas de um grafo $G$.
+	
+	\begin{supposition}
+		$C_4 \not\subseteq G$
+	\end{supposition}
+	\begin{proof}
+		Sejam $a, b, c, d \in V(G)$. Os possíveis ciclos de tamanho $4$ formados entre estes vértices necessariamente passam pelos 4, onde cada vértice tem grau 2 no ciclo. Isso indica uma tentativa de encontrar dois múltiplos distintos de cada vértice em $A$. Dessa forma, estaríamos dizendo que $a b$, $c d$, $a c$ e $b d$ (ou combinação equivalente) pertencem a $A$ . Isso é impossível, visto que $ab \cdot cd = ac \cdot bd$.
+	\end{proof}
+
+	Por fim, para mostrar que $|E(G)| \ge |A|$, basta observar que $1 \in V(G)$. Assim, existe pelo menos uma aresta para cada elemento de $A$.
+\end{document}

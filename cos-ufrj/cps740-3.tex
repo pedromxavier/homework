@@ -4,6 +4,7 @@
 \title{CPS740 - Lista 3}
 \author{Pedro Maciel Xavier}
 \register{116023847}
+\date{1 de setembro de 2020}
 
 
 \begin{document}
@@ -12,62 +13,151 @@
 	
 	\quest %% 1
 	
-	\subsubquest 
-	\begin{fig}[Árvore geradora de uma BFS]
-	\input{cps740-3-0.tikz}
+	\subsubquest Inicialmente, na busca em largura, adicionamos a raiz da árvore geradora à uma fila. Como passo geral do algoritmo, removemos o primeiro elemento da fila e visitamos o vértice correspondente. Ao visitar um vértice marcamos-no e, em seguida, adicionamos à fila todos os seus vizinhos ainda não marcados. Este processo tem fim quando a fila se encontrar vazia.
+	\begin{fig}[Árvore geradora de uma BFS e a fila utilizada.]
+		\input{cps740-3-1a.tikz}
 	\end{fig}
 
-	\subsubquest 
-	\begin{fig}[Árvore geradora de uma DFS]
-		\input{cps740-3-1.tikz}
+	\subsubquest O procedimento usual para a busca em profundidade é o mesmo, a menos da estrutura de dados utilizada, que neste caso será uma pilha no lugar da fila.
+	\begin{fig}[Árvore geradora de uma DFS e a pilha utilizada.]
+		\input{cps740-3-1b.tikz}
 	\end{fig}
 
 	\quest %% 2
 	
-	\subsubquest
+	As especificidades do grafo $G(V, E)$ nos revelam que este se trato, de fato, de uma árvore, uma vez que $|E| = |V| - 1$ e o grafo não possui ciclos.
 	
-	\begin{algor}{DFS}
-	def dfs(G, r):
-		// Pilha contendo a raiz da árvore geradora
-		seja S <- _pilha_({r})
-		
+	\subsubquest Para preencher o vetor de retorno, vamos alterar o algoritmo da BFS,
+	
+	\begin{algor}[BFS dos pais]
+	def retorno(G(V, E)):
 		// Vetor de Retorno
-		seja n <- |_v_(G)|
 		seja R[n]
+		
+		// vértice qualquer em G
+		seja r em G 
+		
+		// Fila contendo a raiz da árvore geradora
+		seja S <- _fila_({r})
+		
+		para cada w em _v_(G):
+			w.cor <- _nulo_
 		
 		enquanto |S| > 0:
 			seja w <- S.remover()
-			seja A <- _viz_(G, w)
-			
-			se |A| > 0:
-				para cada u em A:
-					se u.cor == 0:
-						u.cor <- 1
-						S.inserir(u)
-						R[u] <- w
-					senão:
-						continua
-			senão:
-				continua
+
+			para cada u em _viz_(G, w):
+				se u.cor == _nulo_:
+					continua
+				senão:
+					u.cor <- 1
+					S.inserir(u)
+					R[u] <- w
 
 		retorna R
 	\end{algor}
 
-	\subsubquest
+	\subsubquest Calcular o diâmetro de uma árvore $T$ é o mesmo que computar o tamanho do seu maior caminho.
+	
+	\begin{supposition}
+		Em uma árvore $T$, seja $u$ o vértice mais distante da raiz $r$ e $w$ o vértice mais distante de $u$, temos que o caminho entre $u$ e $w$ é o caminho máximo em $T$.
+	\end{supposition}
+
+	\begin{fig}
+		\input{cps740-3-2a.tikz}
+	\end{fig}
+
+	\begin{proof}
+		 Uma vez que se tem certeza de que $u$ é uma das extremidades do caminho máximo, segue que $w$ se encontra na outra ponta, já que é o vértice mais distante de $u$, isto é, não existe $v$ tal que $d(u, v) > d(u, w)$.\par
+		 
+		 Para demonstrar que $u$ é, de fato, uma das extremidades do caminho de maior comprimento, vamos supor que $x$ e $y$ são os limites do caminho máximo de $T$. Seja $\Gamma$ o caminho entre $r$ e $u$ e $\Lambda$ o caminho entre $x$ e $y$. Seja $s$ o primeiro vértice em $\Lambda$ a ser descoberto pela busca iniciada em $r$.\par
+		 
+		 \begin{enumerate}[label=\Roman*.:]
+		 	\item Se $\Gamma$ e $\Lambda$ não possuírem vértices em comum, então certamente $r$ estará no caminho entre $s$ e $u$.
+		 		\begin{fig}
+		 			\input{cps740-3-2b.tikz}
+		 		\end{fig}
+	 		Assim, temos que $d(s, u) \ge d(r, u)$. Pela busca realizada a partir de $r$, sabemos que $d(r, u) \ge d(r, x) \ge d(s, x)$. Portanto, $d(s, u) \ge d(s, x)$. Logo, $d(s, u) + d(s, y) \ge d(s, x) + d(s, y) \implies d(y, u) \ge d(y, x)$. Se $\Lambda$ é o maior caminho e $d(x, y) \ge d(u, y)$, então $d(x, y) = d(u, y)$. Com isto se confirma o fato de que $u$ está em uma das extremidades do caminho máximo para esta configuração.
+		 	
+		 	\item Se $\Gamma$ e $\Lambda$ possuem algum vértice em comum, então $s$ está em $\Gamma$. 
+			 	\begin{fig}
+			 		\input{cps740-3-2c.tikz}
+			 	\end{fig}
+		 	Argumentando mais uma vez que $u$ é o resultado da busca, reconhecemos que $d(s, u) \ge d(s, x) \implies d(y, s) + d(s, u) \ge d(y, s) + d(s, x)$. Isso nos diz que $d(y, u) \ge d(y, x)$ Contudo, como $\Lambda$ é o maior caminho da árvore, $d(x, y) \ge d(u, y)$. Logo $d(y, u) = d(y, x)$. De toda forma, $u$ está em uma das pontas do caminho máximo.
+		 \end{enumerate}
+
+	Recapitulando o raciocínio apresentado no início da demonstração concluímos que $w$ também será uma extremidade do caminho máximo.
+	\end{proof}
+	
+	Seguindo a construção, basta realizar uma busca em largura (BFS) para encontrar $u$ e uma outra para descobrir $w$. Uma busca desta natureza visita cada vértice uma única vez, de onde contabilizamos custo $O(2 n) = O(n)$ para encontrar os dois extremos.\par
+	
+	Por fim, considerando que preenchemos um vetores de retorno ao realizar as buscas e arcando com um custo extra de tempo linear $O(n)$, contamos o número de passos necessários para retornar ao vértice $u$ a partir de $w$. Este será o diâmetro da árvore e o algoritmo é de tempo linear.
 	
 	\quest %% 3
 	
+	\begin{supposition}
+		Existe um contra-exemplo para a afirmação.
+	\end{supposition}
+	
+	\begin{proof}
+		Para obter um contra-exemplo à afirmação, basta construir uma rede em camadas $D(V, E)$, de origem $s$ e destino $t$, com $n_1$ vértices no primeiro nível e $n_2$ no segundo. Conectamos todos os vértices de níveis adjacentes da seguinte forma: $s$ está ligado aos $n_1$ vértices do nível 1 por arestas de capacidade $a$. Cada um destes possui $n_2$ ligações de enorme capacidade, que denotaremos por $\infty$, com os vértices do nível 2. Estes, por sua vez, tem cada um uma ligação de capacidade $b$ com o destino $t$. Por fim, precisamos de $n_1, n_2, a, b \in \mathbb{N}$ que satisfaçam
+		\begin{align}
+			n_1 \cdot a < n_2 \cdot b ~ \wedge ~ n_1 \cdot (a + 1) > n_2 \cdot (b + 1)
+		\end{align}
+		A primeira desigualdade advém da rede antes do acréscimo, enquanto a segunda já conta com o incremento.\par
+		
+		Seja $(S, \bar{S})$ um corte mínimo de $D(V, E)$ onde $s \in S$ e $v \in \bar{S}$. As arestas entre os níveis 1 e 2 jamais pertencerão a $(S, \bar{S})$, pois suas capacidades são muitíssimo elevadas. Assim, um corte mínimo não pode conter nenhuma destas ligações. Sabemos portanto, que $n_1 \cdot a$ será o corte mínimo pois todas as arestas de peso $a$ estarão inclusas no corte, já que $s \in S$. Assim, $S = {a}$ e $\bar{S} = V - S$, uma vez que $n_1 \cdot a < n_2 \cdot b$. Temos argumento semelhante para obter o corte mínimo após aumentar as capacidades em uma unidade. \par
+		
+		De (1) temos que
+		\begin{align}
+			&n_1 \cdot a + n_2 \cdot(b + 1) < n_2 \cdot b + n_1 \cdot(a + 1) \nonumber \\
+			&\therefore n_2 < n_1
+		\end{align}
+		além de que
+		\begin{align}
+			\frac{a}{b} < \frac{n_2}{n_1} < \frac{a + 1}{b + 1}
+		\end{align}
+		de onde concluímos que $a < b$. Fixados $a, b \in \mathbb{N}$, temos de (3) que
+		\begin{align}
+			\frac{a}{b} < \frac{a + 1}{b + 1} \in \mathbb{Q}
+		\end{align}
+		Os racionais ($\mathbb{Q}$) são um conjunto denso. Isto é, para todo $p \in \mathbb{Q}$ e todo $\epsilon > 0$ existe $q \in \mathbb{Q}$ tal que $|p - q| < \epsilon$. Isto equivale a dizer que para todo par $p, q \in \mathbb{Q}$ com $p < q$, existe $r \in \mathbb{Q}$ tal que $p < r < q$. Basta que seja $r$ a média aritmética entre $p$ e $q$. Subdividindo sucessivamente o aberto $(p, q)$ com médias, concluímos que existem infinitos números racionais entre $p$ e $q$. Logo, existe uma infinidade de pares $n_1, n_2 \in \mathbb{N}$ que satisfazem (3).
+	\end{proof}
+	
 	\quest %% 4
+
+	\subsubquest Somando o fluxo de cada uma das arestas que deixa a origem $s$ temos $3 + 8 + 4 = 15$. Este valor é o mesmo que chega ao destino $t$, onde $3 + 11 + 1 = 15$.\par
 	
 	\begin{fig}[Uma rede de fluxos]
-		\input{cps740-3-2.tikz}
+		\input{cps740-4-1a.tikz}
+	\end{fig}
+
+	O fluxo, no entanto, não é máximo. Basta perceber que temos um caminho aumentante $(s, v_3, t)$ de gargalo $1$ que permite aumentar o fluxo para $16$.\par
+	
+	\subsubquest O corte mínimo $(S, \bar{S})$ na rede é dado por $S = \{s, v_1, v_2, v_3, v_4, v_5\}$ e $\bar{S} = \{t\}$. A soma das capacidades de suas arestas e portanto, o fluxo máximo, é $4 + 12 + 5 = 21$.
+	
+	\begin{fig}[Uma rede de fluxos]
+		\input{cps740-4-1c.tikz}
 	\end{fig}
 	
 	\quest %% 5
 	
+	Para organizar a viagem das $F$ famílias em $V$ veículos podemos modelar o problema como uma rede de fluxos em camadas. Imaginemos a origem $s$ como o ponto de encontro dessas famílias, onde veículos virão buscá-las. Em determinado momento, os guias solicitam que as $p_i$ pessoas da $i$-ésima família se reúnam em $Q_i$, o $i$-ésimo quiosque do local.
+	
+	\begin{fig}[Capacidades de uma rede.]
+		\input{cps740-5-1a.tikz}
+	\end{fig}
+
+	Ao chegarem os $V$ veículos, os turistas foram informados que $K_j$, a $j$-ésima Kombi, comporta apenas uma pessoa de cada família, a fim de evitar desentendimentos durante o trajeto destas pessoas que já não aguentam mais ficar juntas após os 14 meses que passaram dentro de casa. Assim, entre cada $Q_i$ e cada $K_j$ existe uma aresta de peso 1.\par
+
+	Após uma viagem tranquila os passageiros chegam à areia de Saquarema, destino conhecido como $t$. De cada Kombi $K_j$ podem descer, no máximo, $l_j$ passageiros, pois existe uma guarita da Polícia Rodoviária nas redondezas.\par
+	
+	Analisando o processo de distribuição das pessoas nos veículos, conforme indica a figura, podemos representar a organização através de uma rede. Com isso, aplicamos algum algoritmo para o fluxo máximo (Ford-Fulkerson, Dinitz, etc.), a fim de obter o valor $f_{max}$. Só conseguiríamos organizar uma viagem sem problemas se $f_{max} \ge \sum_{i=1}^{F} p_i$.\par
 	
 	
 	\begin{thebibliography}{10}
-		\bibitem{jayme:18} SZWARCFITER, Jayme Luiz, \textbf{Teoria Computacional de Grafos}, 1ª edição, Rio de Janeiro, 2018.
+		\bibitem{jayme:18} Jayme Luiz Szwarcfiter, \textbf{Teoria Computacional de Grafos}, 1ª edição, Rio de Janeiro, 2018.
+		
+		\bibitem{demaine:01} Erik Demaine, Charles E. Leiserson \&, Lee Wee Sun, \textbf{Introduction to Algorithms}, MIT, 2001. 
 	\end{thebibliography}
 \end{document}

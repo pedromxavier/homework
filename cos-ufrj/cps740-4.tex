@@ -1,0 +1,174 @@
+\documentclass{homework}
+\usepackage{homework}
+
+\usetikzlibrary{arrows.meta,decorations.markings}
+
+\title{CPS740 - Lista 4}
+\author{Pedro Maciel Xavier}
+\register{116023847}
+
+
+\begin{document}
+	
+	\maketitle
+	
+	\quest %% 1
+	
+	Seguindo as especificações do grafo obtemos:
+	\begin{align*}
+		V = \{&(2, 3), (2, 5), (2, 7), (3, 2), (3, 5), (3, 7),\\
+		&(5, 2), (5, 3), (5, 7), (7, 2), (7, 3), (7, 5)\}\\
+		~\\
+		E_1 = \{&((2, 3), (3, 2)), ((2, 5), (5, 2)), ((2, 7), (7, 2)),\\
+		&((3, 5), (5, 3)), ((3, 7), (7, 3)), ((5, 7), (7, 5))\}\\
+		~\\
+		E_2 = \{&((2, 3), (2, 5)),~ ((2, 3), (2, 7)),~ ((2, 5), (2, 7)),\\
+		&((3, 2), (3, 5)),~ ((3, 2), (3, 7)),~ ((3, 5), (3, 7)),\\
+		&((5, 2), (5, 3)),~ ((5, 2), (5, 7)),~ ((5, 3), (5, 7)),\\
+		&((7, 2), (7, 3)),~ ((7, 2), (7, 5)),~ ((7, 3), (7, 5))\}
+	\end{align*}
+	
+	%% a
+	\subsubquest Desenhamos $G(V, E_1 \cup E_2)$ com os respectivos pesos indicados em cada uma das arestas. As arestas pertencentes a $E_1$ foram coloridas de {\color{blue!40}azul}, enquanto as de $E_2$ estão vestidas de {\color{red!40}vermelho}.
+	
+	\begin{fig}
+		\input{cps740-4-1a.tikz}	
+	\end{fig}
+
+	\pagebreak
+	
+	\newgeometry{bottom=-200pt}
+	
+	\subsubquest {\color{red}\ttfamily
+Mathematics Error: `Vertex (1, 2)` not found.\\
+Traceback:\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+Recursion Limit in Mathematics.\\
+}%% b
+	
+	\pagebreak
+	
+	\restoregeometry
+
+	\quest %% 2
+	
+	\begin{algor}[Floyd-Warshall++]
+	def floyd__warshall(G(V, E), P[n][n]):
+		// G(V, E) um grafo
+		// P[n][n] a matriz de pesos das arestas de G
+		seja n <- |V|
+		
+		seja dist[n][n] <- $\infty$
+		seja kmin[n][n] <- _nulo_
+		
+		para cada [u, v] em E:
+			dist[u][v] <- P[u][v] 
+			kmin[u][v] <- v
+			
+		para cada v em V:
+			dist[v][v] <- 0
+			kmin[v][v] <- v
+			
+		para k de 1 até n:
+			para i de 1 até n:
+				para j de 1 até n:
+					se dist[k][k] < 0:
+						// Achamos um ciclo negativo
+						retorna _nulo_
+					se dist[i][j] > dist[i][k] + dist[k][j]:
+						// Preferimos ir de `i` para `k`
+						// do que de `i` para `j`
+						dist[i][j] <- dist[i][k] + dist[k][j]
+						kmin[i][j] <- kmin[i][k]
+						
+		seja caminhos[n][n]
+		
+		para cada [u, v] em V $\times$ V:
+			se kmin[u][v] = _nulo_:
+				caminhos[u][v] <- _nulo_
+			senão:
+				caminhos[u][v] <- _lista_([u])
+				enquanto u != v:
+					u <- kmin[u][v]
+					caminhos[u][v].inserir(u)
+		
+		retorna caminhos
+	\end{algor}
+	
+	\quest %% 3
+	
+	\subquest %% 1
+	
+	\subquest %% 1
+	
+	\quest %% 4
+	
+	\quest %% 5
+	
+	
+	
+	\begin{thebibliography}{10}
+		\bibitem{jayme:18} Jayme Luiz Szwarcfiter, \textbf{Teoria Computacional de Grafos}, 1ª edição, Rio de Janeiro, 2018.
+	\end{thebibliography}
+\end{document}

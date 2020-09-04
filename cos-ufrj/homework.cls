@@ -19,6 +19,7 @@
 \RequirePackage{mathtools}% 
 \RequirePackage{ifthen}
 \RequirePackage{xifthen}
+\RequirePackage{geometry}
 
 %% Pgf - Tikz
 \RequirePackage{tikz}
@@ -35,6 +36,11 @@
 
 \newcommand{\gvertex}[4][]{%%
 	\node (#2) at (#3, #4) {};
+	\draw [#1] (#2) circle [radius=2pt];
+}
+
+\newcommand{\lvertex}[5][]{%%
+	\node (#2) at (#3, #4) {#5};
 	\draw [#1] (#2) circle [radius=2pt];
 }
 
@@ -146,24 +152,19 @@
 	{até}{{{\keywordstyle at{\'e}}}}3
 	{senão}{{{\keywordstyle sen{\~a}o}}}5
 	%%
-	{\_fila\_}{{{\emphstyle fila}}}4
-	{\_pilha\_}{{{\emphstyle pilha}}}5
-	{\_vazio\_}{{{\emphstyle vazio}}}5
-	{\_v\_}{{{\emphstyle v}}}1
-	{\_e\_}{{{\emphstyle e}}}1
-	{\_nulo\_}{{{\emphstyle nulo}}}4
-	{\_grau\_}{{{\emphstyle grau}}}4
-	{\_soma\_}{{{\emphstyle soma}}}4
-	{\_viz\_}{{{\emphstyle viz}}}3
-	{\_max\_}{{{\emphstyle max}}}3
-	{\_min\_}{{{\emphstyle min}}}3
-	{\_mergesort\_}{{{\emphstyle merge-sort}}}{9}
+	{\_\_}{{{\_}}}1
 	,
+	moredelim={[is][\emphstyle]{\_}{\_}}
 }
 
-\lstnewenvironment{algor}[1]{%%
+\lstnewenvironment{algor}[1][\empty]{%%
+	\ifx#1\empty
+	\def\thistitle{\unskip}%
+	\else
+	\def\thistitle{.: #1}%
+	\fi
 	\stepcounter{algors}
-	\lstset{style=algorstyle, title={Algoritmo \thealgors: #1}}
+	\lstset{style=algorstyle, title={Algoritmo \thealgors\thistitle}}
 }{%%
 }
 
