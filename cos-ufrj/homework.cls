@@ -20,6 +20,8 @@
 \RequirePackage{ifthen}
 \RequirePackage{xifthen}
 \RequirePackage{geometry}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
 %% Pgf - Tikz
 \RequirePackage{tikz}

@@ -40,7 +40,7 @@
 }
 
 \renewcommand{\thesubquests}{%%
-	\roman{subquests}
+	\arabic{subquests}
 }
 
 \renewcommand{\thesubsubquests}{%%
@@ -58,13 +58,17 @@
 		\def\thisquest{.: {\normalfont#1}}%
 	\fi
     {\Large\bfseries Questão \thequests\thisquest} \\%%
-  
 }
 
 \newcommand{\subquest}[1][]{%%
 	\stepcounter{subquests}
 	\setcounter{subsubquests}{0}
-    {\large\bfseries\thesubquests\hspace{-3pt}) #1} \\%%
+	\ifx#1\empty
+	\def\thissubquest{\unskip}%
+	\else
+	\def\thissubquest{.: {\normalfont#1}}%
+	\fi
+    {\large\bfseries\thesubquests\thissubquest}%%
 }
 
 \newcommand{\subsubquest}[1][]{%%

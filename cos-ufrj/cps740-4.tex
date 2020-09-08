@@ -7,6 +7,7 @@
 \author{Pedro Maciel Xavier}
 \register{116023847}
 
+\setcounter{MaxMatrixCols}{20}
 
 \begin{document}
 	
@@ -29,94 +30,27 @@
 	\end{align*}
 	
 	%% a
-	\subsubquest Desenhamos $G(V, E_1 \cup E_2)$ com os respectivos pesos indicados em cada uma das arestas. As arestas pertencentes a $E_1$ foram coloridas de {\color{blue!40}azul}, enquanto as de $E_2$ estão vestidas de {\color{red!40}vermelho}.
+	\subsubquest Desenhamos $G(V, E_1 \cup E_2)$ com os respectivos pesos indicados em cada uma das arestas. As arestas pertencentes a $E_1$ foram coloridas de {\color{blue!50}azul}, enquanto as de $E_2$ estão vestidas de {\color{red!50}vermelho}.
 	
-	\begin{fig}
+	\begin{fig}[O Grafo $G(V, E_1 \cup E_2)$]
 		\input{cps740-4-1a.tikz}	
 	\end{fig}
 
 	\pagebreak
 	
-	\newgeometry{bottom=-200pt}
+	%% b
+	\subsubquest Começando no vértice $(2, 3)$, vejamos a execução do algoritmo de \textit{Djkstra}, com a miniatura do grafo ao lado do vetor de distâncias.
 	
-	\subsubquest {\color{red}\ttfamily
-Mathematics Error: `Vertex (1, 2)` not found.\\
-Traceback:\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-Recursion Limit in Mathematics.\\
-}%% b
-	
-	\pagebreak
-	
-	\restoregeometry
+%%	\begin{fig} %% -- Some special case here
+		\input{cps740-4-1b.tikz}	
+%%	\end{fig}
 
 	\quest %% 2
 	
 	\begin{algor}[Floyd-Warshall++]
 	def floyd__warshall(G(V, E), P[n][n]):
-		// G(V, E) um grafo
-		// P[n][n] a matriz de pesos das arestas de G
+		// `G(V, E)` um grafo
+		// `P[n][n]` a matriz de pesos das arestas de G
 		seja n <- |V|
 		
 		seja dist[n][n] <- $\infty$
@@ -158,17 +92,49 @@ Recursion Limit in Mathematics.\\
 	
 	\quest %% 3
 	
-	\subquest %% 1
+	\subquest[O algoritmo de \textit{Dijkstra} sempre obtém o caminho mais curto caso o grafo possua arestas com pesos negativos. \textbf{Falso}]%% 1
 	
-	\subquest %% 1
+	Seja $G(V, E)$ com $V = \{x, y, z\}$ e $E = \{(x, y), (x, z), (y, z)\}$. Suponha que $P(x, y) = a$, $P(x, z) = b$ e $P(y, z) = -b$ com $0 < a < b$.
+	\begin{fig}[Grafo genérico onde o algoritmo de \textit{Djkstra} falha.]
+		\input{cps740-4-3a.tikz}
+	\end{fig}
+	O Algoritmo de \textit{Djkstra} consideraria $(x, y)$ o menor caminho entre $x$ e $y$, negligenciando a existência de $(x, z, y)$, cujo custo é menor. 
+	
+	\subquest[Sejam $M$ e $M'$ dois emparelhamentos perfeitos de $G$. Seja $H$ o subgrafo induzido pela diferença simétrica de $M$ e $M'$. Então, toda componente conexa de $H$ é um ciclo ou caminho. \textbf{Verdadeiro}]%% 2
+	
+	\begin{proof}
+	Vamos desconsiderar o caso trivial onde $M = M'$, pois bastaria tomar $G = K_2$ para obter um contra-exemplo ($M \triangle M' = \emptyset$). Dito isto, vamos supor, por absurdo, que uma das componentes conexas de $H$ não é um ciclo ou caminho, isto é, possui ao menos um vértice $w \in H, \text{grau}(w) \ge 3$.
+	
+	\begin{fig}[Componente conexa hipotética em $H$]
+		\input{cps740-4-3b.tikz}
+	\end{fig}
+
+	Vamos supor que $w$ esteja conectado aos vértices $x, y, z \in H$ e que $\{(w, x), (w, y), (w, z)\} \subseteq M \triangle M'$. Como $A \triangle B = (A - B) \cup (B - A)$, então $e \in A \triangle B \implies e \notin A \cap B$. Como uma aresta de $H$ não pode estar em $M$ e $M'$ ao mesmo tempo, temos, pelo Princípio da Gaiola de Pombos (\textit{Pigeonhole}), que um dos dois conjuntos deve possuir ao menos duas arestas. No entanto, as três arestas são incidentes em $w$. Isto não é possível, uma vez que $M$ e $M'$ são emparelhamentos.
+	\end{proof}
 	
 	\quest %% 4
 	
+	Seja $G(V, E)$ um grafo simples e $M$ um emparelhamento máximo de $G$.	
+	
 	\quest %% 5
+	
+	\begin{supposition}
+		Não é possível cobrir um tabuleiro de $100 \times 100$ utilizando retângulos $2 \times 1$ após a retirada de dois cantos opostos.
+	\end{supposition}
+
+	\begin{proof}
+		Imaginemos que o tabuleiro é colorido como se fosse para jogar xadrez ou damas:
+		\begin{fig}[Tabuleiro de Xadrez]
+			\input{cps740-4-5a.tikz}
+		\end{fig}
+		Ao posicionar um retângulo $2 \times 1$ sobre o tabuleiro, este ocupará sempre uma casa clara e uma casa escura. No entanto, ao removermos cantos opostos do tabuleiro, isto é, casas de uma mesma diagonal principal, estaremos retirando duas casas de mesma cor. Desta forma, tendo um tabuleiro de tamanho $n \times n, n \ge 2$ após a remoção dos cantos, podemos posicionar até $n^2 / 2 - 2$ retângulos. $n$ é necessariamente um número par. Ao tentar incluir o que seria o último retângulo do tabuleiro ferido, nos deparamos com duas casas de mesma cor. Posicionar a peça violaria a necessidade de preencher casas de cores diferentes.
+	\end{proof}
 	
 	
 	
 	\begin{thebibliography}{10}
 		\bibitem{jayme:18} Jayme Luiz Szwarcfiter, \textbf{Teoria Computacional de Grafos}, 1ª edição, Rio de Janeiro, 2018.
+		
+		\bibitem{brunold} Brunold, \textbf{Aplicativo de Mensagens Telegram}, 2020.
 	\end{thebibliography}
 \end{document}
