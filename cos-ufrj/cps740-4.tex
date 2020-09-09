@@ -1,6 +1,6 @@
 \documentclass{homework}
 \usepackage{homework}
-
+\usepackage{marginnote}
 \usetikzlibrary{arrows.meta,decorations.markings}
 
 \title{CPS740 - Lista 4}
@@ -114,7 +114,43 @@
 	
 	\quest %% 4
 	
-	Seja $G(V, E)$ um grafo simples e $M$ um emparelhamento máximo de $G$.	
+	\begin{theorem}
+		Seja $G(V,E)$ um grafo simples, $\rho(G)$ o tamanho da menor cobertura de arestas $C$ e $\nu(G)$ o tamanho do maior emparelhamento $M$. Vale que $|V| = \rho(G) + \nu(G) = |C| + |M|$.
+	\end{theorem}	
+	
+	\begin{proof}
+		Seja $M$ um emparelhamento máximo, isto é, $|M| = \nu(G)$. Cada aresta em $M$ cobre exatamente dois vértices de $G$, pela definição de emparelhamento. 
+		\begin{fig}[Formando uma cobertura a partir de $M$.]
+			\input{cps740-4-4a.tikz}
+		\end{fig}
+		Adicionamos a $M$, para cada vértice $w$ não emparelhado por $M$, uma aresta incidente sobre $w$. Isto é possível graças à conexidade de $G$. Assim, obtemos uma cobertura $\hat{C}$ dos vértices de $G$, onde $|\hat{C}| = |M| + (|V| - 2|M|) = |V| - |M|$. Disso segue que
+		\begin{align}
+		\rho(G) &= |C| \le |\hat{C}| = |V| - |M|\nonumber\\
+		\implies |V| &\ge |C| + |M|
+		\end{align}
+		Por outro lado, se $C$ é uma cobertura mínima dos vértices, ou seja, $|C| = \rho(G)$, então podemos, para cada componente conexa no subgrafo $H(V, C)$, escolher uma aresta de modo a compor um emparelhamento $\hat{M}$.
+		\begin{fig}[Compondo um emparelhamento a partir de $C$.]
+		 	\input{cps740-4-4b.tikz}
+		\end{fig}
+		O número de componentes conexas em $H(V, C)$ é $|\hat{M}| = |V| - |C|$. Para melhor entender este fato, basta escrever \begin{align*}
+		|V| &= \sum_{h \subseteq H} |v(h)|\\
+		|C| &= \sum_{h \subseteq H} |e(h)|\\
+		\therefore |V| - |C| &= \sum_{h \subseteq H} |v(h)| - |e(h)|\\
+		|V| - |C| &= \sum_{h \subseteq H} 1 = |\hat{M}|
+		\end{align*}
+		onde $h \subseteq H$ é uma componente conexa de $H$. Aqui usamos o fato de que $C$ é cobertura mínima e, portanto, cada $h \subseteq H(V, C)$ é uma árvore. Assim, $|v(h)| - |e(h)| = 1$.\par
+		
+		Por fim, sabemos que
+		\begin{align}
+		\nu(G) &= |M| \ge |\hat{M}| = |V| - |C|\nonumber\\
+		\implies |V| &\le |C| + |M|
+		\end{align}
+		Com $(1)$ e $(2)$ concluímos que $|V| = |C| + |M|$.
+		
+		\subsection*{Conclusão}
+		
+	 	
+	\end{proof}
 	
 	\quest %% 5
 	
@@ -130,11 +166,9 @@
 		Ao posicionar um retângulo $2 \times 1$ sobre o tabuleiro, este ocupará sempre uma casa clara e uma casa escura. No entanto, ao removermos cantos opostos do tabuleiro, isto é, casas de uma mesma diagonal principal, estaremos retirando duas casas de mesma cor. Desta forma, tendo um tabuleiro de tamanho $n \times n, n \ge 2$ após a remoção dos cantos, podemos posicionar até $n^2 / 2 - 2$ retângulos. $n$ é necessariamente um número par. Ao tentar incluir o que seria o último retângulo do tabuleiro ferido, nos deparamos com duas casas de mesma cor. Posicionar a peça violaria a necessidade de preencher casas de cores diferentes.
 	\end{proof}
 	
-	
-	
 	\begin{thebibliography}{10}
 		\bibitem{jayme:18} Jayme Luiz Szwarcfiter, \textbf{Teoria Computacional de Grafos}, 1ª edição, Rio de Janeiro, 2018.
 		
-		\bibitem{brunold} Brunold, \textbf{Aplicativo de Mensagens Telegram}, 2020.
-	\end{thebibliography}
+		\bibitem{schrijver:20} Alexander Schrijver, \textbf{Advanced Graph Theory Course Notes}, CWI Amsterdam, 2020.
+	\end{thebibliography} 
 \end{document}
