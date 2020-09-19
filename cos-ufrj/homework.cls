@@ -188,7 +188,7 @@
 }
 
 %% Centered maketitle
-\newcommand{\cmaketitle}{%%
+\newcommand{\cmaketitle}[1]{%%
 	\topskip0pt
 	\vspace*{\fill}
 	\begin{center}
@@ -198,7 +198,7 @@
 		{\Large \@date \space}
 	\end{center}
 	\vspace*{\fill}
-	%%\wallpaper{cps740-p1-wallpaper.png}
+	\wallpaper{#1}
 	\pagebreak
 }
 

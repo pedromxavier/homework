@@ -67,14 +67,14 @@
 		para k de 1 até n:
 			para i de 1 até n:
 				para j de 1 até n:
-					se dist[k][k] < 0:
-						// Achamos um ciclo negativo
-						retorna _nulo_
 					se dist[i][j] > dist[i][k] + dist[k][j]:
 						// Preferimos ir de `i` para `k`
 						// do que de `i` para `j`
 						dist[i][j] <- dist[i][k] + dist[k][j]
 						kmin[i][j] <- kmin[i][k]
+					se dist[j][j] < 0:
+						// Achamos um ciclo negativo
+						retorna _nulo_
 						
 		seja caminhos[n][n]
 		
@@ -146,11 +146,9 @@
 		\implies |V| &\le |C| + |M|
 		\end{align}
 		Com $(1)$ e $(2)$ concluímos que $|V| = |C| + |M|$.
-		
-		\subsection*{Conclusão}
-		
-	 	
 	\end{proof}
+	\subsection*{Conclusão}
+		A própria demonstração nos revela que, tendo um emparelhamento máximo $M$, construímos uma cobertura $\hat{C}$ de maneira gulosa onde $|\hat{C}| = |V| - |M|$. O teorema nos mostrou que $|C| = |V| - |M|$. Portanto, $|\hat{C}| = |C|$, ou seja, a cobertura construída desta maneira é mínima. O caminho inverso também segue raciocínio análogo, pautado no respectivo trecho da demonstração.
 	
 	\quest %% 5
 	
