@@ -9,7 +9,7 @@
 	
 	\cmaketitle{cps740-p2-wallpaper.png}
 	
-	\quest
+	\quest Vejamos o seguinte grafo:
 	
 	\begin{fig}
 		\input{cps740-p2-1.tikz}
@@ -17,19 +17,47 @@
 	
 	\subquest[Algoritmo de \textit{Djkstra}] %%1
 	
+	Abaixo temos passo-a-passo do algoritmo de \textit{Djkstra}. Vemos uma miniatura do grafo ao lado da tabela respectiva a cada iteração. Seja $u$ a raiz da busca, para cada vértice $v$ temos a distância até a raiz $d(v, u)$ e o vetor de retorno $\mathbf{r}[v]$ que vamos usar para construir a árvore geradora.
+	
 	%%\begin{fig}
 	\input{cps740-p2-1a.tikz}
 	%%\end{fig}
 	
-	\subquest%%2
+	\pagebreak
 	
-	\subquest%%3
+	\subquest[Árvore Geradora de \textit{Djkstra}] %%2
 	
-	\subquest Independentemente do critério de ordenação na busca, uma árvore geradora oriunda de uma busca em largura optaria por atingir o vértice $C$ utilizando-se da aresta $(D, C)$, de custo $9$. A árvore de caminho mínimo, no entanto, chegaria ao vértice $C$ através de $B$, uma vez que o caminho $(D, B, C)$ possui distância total $2 + 1 = 3$.
+	Observando com atenção a configuração final da tabela construída pelo algoritmo, podemos construir a árvore geradora:
 	
-	\subquest
+	%%\begin{fig}
+	\input{cps740-p2-1b.tikz}
+	%%\end{fig}
 	
-	\subquest
+	\subquest[Árvore de busca em largura]%%3
+	
+	Independentemente do critério de ordenação na busca, uma árvore geradora oriunda de uma busca em largura optaria por atingir o vértice $C$ utilizando-se da aresta $(D, C)$, de custo $9$. A árvore de caminho mínimo, no entanto, chegaria ao vértice $C$ através de $B$, uma vez que o caminho $(D, B, C)$ possui distância total $2 + 1 = 3$.
+	
+	\subquest[Algoritmo de \textit{Prim}] %% 4
+	
+	O passo-a-passo para este algoritmo  é apresentado de maneira semelhante ao anterior, com a miniatura do grafo ao lado da tabela de cada iteração.
+	
+	%%\begin{fig}
+	\input{cps740-p2-1d.tikz}
+	%%\end{fig}
+	
+	\pagebreak
+	
+	\subquest[Árvore Geradora de \textit{Prim}]%% 5
+	
+	Abaixo, temos a árvore geradora obtida a partir da tabela resultante.
+	
+	%%\begin{fig}
+	\input{cps740-p2-1e.tikz}
+	%%\end{fig}
+	
+	\subquest[Árvore de busca em profundidade] %% 6
+	
+	Iniciando uma busca em profundidade a partir do vértice $A$, seguindo pelo caminho proposto segundo a árvore obtida pelo algoritmo de \textit{Prim}, chegaríamos a $B$ passando por $E$. Aqui encontramos um problema: caso decidamos prosseguir por $C$, alcançaríamos $D$ logo em seguida. Se optamos pelo contrário e seguimos pela aresta ($B$, $D$), temos que ($D$, $C$) pertence a busca em profundidade que continua a partir de $D$. Logo, não é possível reconstruir a árvore geradora através de uma busca em profundidade com raiz em $A$.
 
 	\quest
 
