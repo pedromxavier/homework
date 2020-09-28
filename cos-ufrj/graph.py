@@ -439,6 +439,11 @@ class LaTeX:
             return default
 
     @classmethod
+    def node(cls, x, y, *code):
+        text = f"{cls.ENDL}\n".join(code)
+        return f"\\node [] at ({x}, {y}) {{{text}}};"
+
+    @classmethod
     def _table(cls, header, rows):
         yield r"\begin{tabular}" + f"{{|{'|'.join(['c' for x in header])}|}}"
 
@@ -470,18 +475,16 @@ class LaTeX:
         label = cls.kwget('label', kwargs, '')
         thick = cls.kwget('thick', kwargs, None)
 
-        in_ = cls.kwget('in', kwargs, None)
-        out = cls.kwget('out', kwargs, None)
+        bend = cls.kwget('bend', kwargs, None)
+        bend = '' if bend is None else (r'[bend left]' if bend == 1 else (r'[bend right]' if bend == -1 else ''))
 
-        
+ 
         swap = 'swap' if cls.kwget('swap', kwargs, False) else None
         args = cls.kwget('args', kwargs, ())
 
         options = ", ".join([x for x in ('edge', color, swap, *args) if x is not None])
-
-        inout = f'[{", ".join([x for x in (in_, out) if x is not None])}]'
         
-        return f"\\draw [{options}] ({v}) edge node {{{label}}} ({w});"
+        return f"\\draw [{options}] ({v}) edge {bend} node {{{label}}} ({w});"
 
     @classmethod
     def _fig(cls, *code, title=None):
@@ -536,6 +539,48 @@ class LaTeX:
         return "\n".join([line for line in cls._tikz(vmap, emap, *code, **kwargs)])
 
     @classmethod
+    def _graph(cls, vmap: dict, emap: dict, *code, **kwargs):
+        """
+        """
+
+        scale = round(float(cls.kwget('scale', kwargs, 1.0)), 1)
+
+        options = {
+            r'>= stealth' : None,
+            r'auto' : None,
+            r'every node/.style' : f"{cls.LCUR}scale={scale}{cls.RCUR}",
+            r'v/.style' : r'{draw, circle}',
+            r'edge/.style' : r'{draw, ->}',
+            r'bend angle' : '15',
+            **kwargs
+        }
+
+        options = ", ".join([((f"{k} = {v}") if (v is not None) else (k)) for (k, v) in options.items()])
+        
+        yield r"\begin{tikzpicture}" + f"[{options}]"
+
+        yield r"%% Vertices"
+
+        for v in vmap:
+            yield f"\t{cls.vertex(v, **vmap[v])}"
+
+        yield ""
+
+        yield r"%% Edges"
+        
+        for v, w in emap:
+            yield f"\t{cls.edge(v, w, **emap[v, w])}"
+
+        yield from code
+
+        yield r"\end{tikzpicture}"
+
+    @classmethod
+    def graph(cls, vmap: dict, emap: dict, *code, **kwargs):
+        return "\n".join([line for line in cls._graph(vmap, emap, *code, **kwargs)])
+
+
+    @classmethod
     def dump(cls, fname: str, string: str, mode: str='w'):
-        with open(fname, mode) as file:
+        with open(fname, mode, encoding='utf8') as file:
             file.write(string)

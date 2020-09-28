@@ -1,45 +1,45 @@
 from graph import Graph, LaTeX
-
+from copy import deepcopy as dc
 ## Questão 1.
 
 CACHE = {}
 
-FNAME = 'cps740-p2-1.tikz'
-SCALE = 1.4
+FNAME = 'cps740-p2-2.tikz'
+SCALE = 1.0
 
 w = 2.0
 h = 1.5
 
 _vmap = {
-    'A': {
-    'x': 0.5*w,
+    's': {
+    'x': -2*w,
     'y': 0,
-    'label': 'A',
+    'label': r'$s$',
     },
-    'B': {
-    'x': w,
+    'v1': {
+    'x':-1*w,
+    'y': h,
+    'label': r'$v_1$',
+    },
+    'v2': {
+    'x':-1*w,
     'y':-h,
-    'label': 'B',
+    'label': r'$v_2$',
     },
-    'C': {
+    'v3': {
+    'x': 1*w,
+    'y': h,
+    'label': r'$v_3$',
+    },
+    'v4': {
+    'x': 1*w,
+    'y':-h,
+    'label': r'$v_4$',
+    },
+    't': {
     'x': 2*w,
-    'y':-h,
-    'label': 'C',
-    },
-    'D': {
-    'x': 2.5*w,
     'y': 0,
-    'label': 'D',
-    },
-    'E': {
-    'x': w,
-    'y': h,
-    'label': 'E',
-    },
-    'F': {
-    'x': 2*w,
-    'y': h,
-    'label': 'F',
+    'label': '$t$',
     }
 }
 
@@ -49,351 +49,176 @@ EXTRA = {
 }
 
 _emap = {
-    ('A', 'B') : {'value': 10, 'label': '$10$', 'swap': True},
-    ('A', 'E') : {'value': 4, 'label': '$4$'},
-    ('B', 'C') : {'value': 1, 'label': '$1$', 'swap': True},
-    ('B', 'D') : {'value': 2, 'label': '$2$'},
-    ('B', 'E') : {'value': 7, 'label': '$7$', 'swap': True},
-    ('C', 'D') : {'value': 9, 'label': '$9$', 'swap': True},
-    ('D', 'F') : {'value': 11, 'label': '$11$', 'swap': True},
-    ('E', 'F') : {'value': 12, 'label': '$12$'}
+    ('s', 'v1') : {'value': (16, 9), 'label': '$16/9$'},
+    ('s', 'v2') : {'value': (13, 5), 'label': '$13/5$', 'swap': True},
+    ('v2', 'v1') : {'value': (4, 3), 'label': '$4/3$'},
+    ('v1', 'v3') : {'value': (12, 12), 'label': '$12/12$'},
+    ('v3', 'v2') : {'value': (9, 7), 'label': '$9/7$', 'swap': True},
+    ('v2', 'v4') : {'value': (14, 9), 'label': '$14/9$', 'swap': True},
+    ('v4', 'v3') : {'value': (7, 7), 'label': '$7/7$', 'swap': True},
+    ('v3', 't') : {'value': (20, 12), 'label': '$20/12$'},
+    ('v4', 't') : {'value': (4, 2), 'label': '$4/2$', 'swap': True}
     }
 
-vmap = _vmap.copy()
-emap = _emap.copy()
-
-## for u,v in list(emap): emap[v,u] = emap[u,v]
+vmap = dc(_vmap)
+emap = dc(_emap)
 
 kwargs = {
     'scale' : SCALE,
 }
 
-tikz = LaTeX.tikz(vmap, emap, **kwargs)
+tikz = LaTeX.graph(vmap, emap, **kwargs)
 
 LaTeX.dump(FNAME, tikz)
+## -------------- ##
+def graphres(_vmap, _emap, _path=None):
+    vmap = dc(_vmap)
+
+    ## capacity left
+    cemap = dc(_emap)
+
+    for k in list(cemap.keys()):
+        x, y = cemap[k]['value']
+        if x == y:
+            del cemap[k]
+        else:
+            cemap[k]['value'] = (x - y)
+            cemap[k]['label'] = f"${cemap[k]['value']}$"
+
+    ## residual
+    remap = dc(_emap)
+
+    ## merge
+    for c in list(remap.keys()):
+        a, b = c
+        k = b, a
+        remap[k] = remap[c]
+        del remap[c]
+        x, y = remap[k]['value']
+        if y == 0:
+            del remap[k]
+        else:
+            remap[k]['color'] = 'violet!60'
+            remap[k]['value'] = y
+            remap[k]['label'] = f"${y}$"
+            remap[k]['bend'] = 1
+            if 'swap' in remap[k] and remap[k]['swap']:
+                remap[k]['bend'] = - remap[k]['bend']
+                
+    emap = {**cemap, **remap}
+
+    ## path augment
+    if _path is not None:
+        path = dc(_path)
+
+        for u in path:
+            vmap[u]['color'] = 'blue!60'
+
+        bottleneck = float('inf')
+
+        for u, v in zip(path[:-1], path[1:]):
+            emap[u, v]['color'] = 'blue!60'
+            if emap[u, v]['value'] < bottleneck:
+                bottleneck = emap[u, v]['value']
 
 
-## 1.1
+        x = 0
+        y = min([vmap[u]['y'] for u in vmap])
 
+        pathtext = ", ".join([vmap[u]['label'][1:-1] for u in path])
 
-def graph_table(_vmap: dict, _emap: dict, **extra):
-    global CACHE
-    vmap = _vmap.copy()
-    emap = _emap.copy()
-    
-    header = [r"$v$", r"$d(u, v)$", r"$\mathbf{r}[v]$"]
-
-    rows = []
-    for v in vmap:
-        ## rows
-        d = extra['d'][v]
-        d = d if d != float('inf') else r'\infty'
-
-        r = extra['r'][v]
-        r = r if r is not None else r'\square'
-
-        rows.append([str(v), str(d), str(r)])
-
-        ## clear
-        if 'color' in vmap[v]: del vmap[v]['color']
-        if 'fill' in vmap[v]: del vmap[v]['fill']
-
-    for e in emap:
-        if 'color' in emap[e]: del emap[e]['color']
         
+        text_a = r"\color{blue!60} Caminho aumentante: " + f"$({pathtext})$"
+        text_b = r"\color{blue!60} Gargalo: " + f"${bottleneck}$"
 
-    if 'vink' in extra:
-        for c, v in extra['vink']:
-            vmap[v]['color'] = c
-            vmap[v]['fill'] = c
+        node_a = LaTeX.node(x, y - h/2, text_a)
+        node_b = LaTeX.node(x, y - h/1, text_b)
+    
+        graphtex = LaTeX.graph(vmap, emap, node_a, node_b, **kwargs)
 
-    if 'eink' in extra:
-        for c, e in extra['eink']:
-            if e in emap:
-                emap[e]['color'] = c
-            
-    kwargs = {
-        'scale' : SCALE,
+    else:
+        graphtex = LaTeX.graph(vmap, emap, **kwargs)
+
+    return LaTeX.fig(graphtex)
+
+    
+
+FNAME = 'cps740-p2-2a.tikz'
+
+_path = ('s', 'v2', 'v3', 't')
+
+fig = graphres(_vmap, _emap, _path)
+
+LaTeX.dump(FNAME, fig)
+
+##
+_emap = {
+    ('s', 'v1') : {'value': (16, 9), 'label': '$16/9$'},
+    ('s', 'v2') : {'value': (13, 12), 'label': '$13/15$', 'swap': True},
+    ('v2', 'v1') : {'value': (4, 3), 'label': '$4/3$'},
+    ('v1', 'v3') : {'value': (12, 12), 'label': '$12/12$'},
+    ('v3', 'v2') : {'value': (9, 0), 'label': '$9/7$', 'swap': True},
+    ('v2', 'v4') : {'value': (14, 9), 'label': '$14/9$', 'swap': True},
+    ('v4', 'v3') : {'value': (7, 7), 'label': '$7/7$', 'swap': True},
+    ('v3', 't') : {'value': (20, 19), 'label': '$20/12$'},
+    ('v4', 't') : {'value': (4, 2), 'label': '$4/2$', 'swap': True}
     }
 
-    minitable = LaTeX.table(header, rows)
+_path = ('s', 'v1', 'v2', 'v4', 't')
 
-    tx = extra['tx']
-    ty = extra['ty']
+fig = graphres(_vmap, _emap, _path)
 
-    code = (
-        f'\\node [] at ({tx}, {ty}) {{{minitable}}};',
-    )
-
-    minigraph = LaTeX.tikz(vmap, emap, *code, **kwargs)
-
-    CACHE['vmap'] = vmap
-    CACHE['emap'] = emap
-
-    tikz = f"{minigraph}{LaTeX.ENDL}"
-
-    fig = LaTeX.fig(tikz)
-
-    LaTeX.dump(FNAME, fig, 'a')
-    
-
-def djkstra(_emap: dict, _vmap: dict, s: object, func: callable):
-    global CACHE
-    vmap = _vmap.copy()
-    emap = _emap.copy()
-
-    ##
-    for v in vmap:
-        vmap[v]['label'] = ''
-
-    for e in emap:
-        emap[e]['label'] = ''
-    ##
-    
-    Q = set()
-
-    d = {}
-    r = {}
-
-    for v in vmap:
-        d[v] = float('inf')
-        r[v] = None
-        Q.add(v)
-
-    d[s] = 0
-    r[s] = s
-
-    extra = {
-            'd': d,
-            'r': r,
-            'vink' : [('blue!30', s)],
-            'eink' : [],
-            **EXTRA
-        }
-
-    visited = []
-    
-
-    func(vmap, emap, **extra)
-
-    while Q:
-        u = min(Q, key=lambda w: d[w])
-        Q.remove(u)
-
-        visited.append(('red!30', u))
-
-        neighbours = set()
-
-        extra['vink'] = [*visited.copy()]
-        extra['eink'] = []
-
-        for v in [w for w in Q if (u, w) in emap]: 
-            x = d[u] + emap[u, v]['value']
-            if x < d[v]:
-                d[v] = x
-                r[v] = u
-                
-            ## neighborhood
-            extra['vink'].append(('blue!30', v))
-            extra['eink'].append(('blue!40', (v, u)))
-            extra['eink'].append(('blue!40', (u, v)))
-            neighbours.add((v, u))
-            neighbours.add((u, v))
-            ##
-        else:
-            ## spanning tree
-            for v in r:
-                if v == r[v]: continue
-                if (v, r[v]) in neighbours: continue
-                if (r[v], v) in neighbours: continue
-                extra['eink'].append(('red!40', (v, r[v])))
-                extra['eink'].append(('red!40', (r[v], v)))
-            
-            func(vmap, emap, **extra)
-
-        CACHE['r'] = r
-
-FNAME = 'cps740-p2-1a.tikz'
-SCALE = 1.0
-LaTeX.dump(FNAME, '') ## clear file
-
-vmap = _vmap.copy()
-emap = _emap.copy()
-
-for u,v in list(emap): emap[v,u] = emap[u,v]
-
-djkstra(emap, vmap, 'A', graph_table)
+LaTeX.dump(FNAME, fig, mode='a')
 
 ##
-FNAME = 'cps740-p2-1b.tikz'
-vmap = CACHE['vmap']
-emap = CACHE['emap']
+_emap = {
+    ('s', 'v1') : {'value': (16, 11), 'label': '$16/11$'},
+    ('s', 'v2') : {'value': (13, 12), 'label': '$13/12$', 'swap': True},
+    ('v2', 'v1') : {'value': (4, 1), 'label': '$4/1$'},
+    ('v1', 'v3') : {'value': (12, 12), 'label': '$12/12$'},
+    ('v3', 'v2') : {'value': (9, 0), 'label': '$9/0$', 'swap': True},
+    ('v2', 'v4') : {'value': (14, 11), 'label': '$14/11$', 'swap': True},
+    ('v4', 'v3') : {'value': (7, 7), 'label': '$7/7$', 'swap': True},
+    ('v3', 't') : {'value': (20, 19), 'label': '$20/19$'},
+    ('v4', 't') : {'value': (4, 4), 'label': '$4/4$', 'swap': True}
+    }
 
-r = CACHE['r']
+_path = None #('s', 'v1', 'v2', 'v4', 't')
 
-E = set(emap.keys())
-A = E - ({(r[v], v) for v in vmap if r[v] != v} | {(v, r[v]) for v in vmap if r[v] != v})
+fig = graphres(_vmap, _emap, _path)
 
-for e in E:
-    if e in A: ## to remove
-        del emap[e]
-    else:
-        emap[e]['label'] = ''
-        emap[e]['color'] = 'violet!75'
+LaTeX.dump(FNAME, fig, mode='a')
 
-for v in set(vmap.keys()):
-    vmap[v]['label'] = v
-    vmap[v]['color'] = 'violet!75'
-    vmap[v]['fill'] = 'white'
+FNAME = 'cps740-p2-2b.tikz'
 
-SCALE = 1.4
+_path = None #('s', 'v1', 'v2', 'v4', 't')
 
-kwargs = {
-    'scale' : SCALE
-}
+tikz = LaTeX.graph(_vmap, _emap, **kwargs)
 
-tikz = LaTeX.tikz(vmap, emap, **kwargs)
 fig = LaTeX.fig(tikz)
-LaTeX.dump(FNAME, fig)
 
-def prim(_emap: dict, _vmap: dict, s: object, func: callable):
-    global CACHE
-    vmap = _vmap.copy()
-    emap = _emap.copy()
-
-    ##
-    for v in vmap:
-        vmap[v]['label'] = ''
-
-    for e in emap:
-        emap[e]['label'] = ''
-    ##
-        
-    P = set()
-    Q = set()
-
-    d = {}
-    r = {}
-
-    for v in vmap:
-        d[v] = float('inf')
-        r[v] = None
-        Q.add(v)
-
-    d[s] = 0
-    r[s] = s
-
-    P.add(s) ## omega
-    Q.remove(s) ## resto
-
-    extra = {
-            'd': d,
-            'r': r,
-            'vink' : [('blue!30', s)],
-            'eink' : [],
-            **EXTRA
-        }
-
-    visited = []
-    
-    func(vmap, emap, **extra)
-
-    visited.append(('red!30', s))
-
-    while Q:
-        neighbours = set()
-
-        extra['vink'] = [*visited.copy()]
-        extra['eink'] = []
-
-        ## cut
-        min_edge = (None, float('inf'))
-        for u, v in [(p, q) for p in P for q in Q if (p, q) in emap]: ## cut
-            if emap[u, v]['value'] < min_edge[1]: ## new minimum found
-                min_edge = ((u, v), emap[u, v]['value'])
-                
-            ## neighborhood
-            extra['vink'].append(('blue!30', v))
-            extra['eink'].append(('blue!40', (v, u)))
-            extra['eink'].append(('blue!40', (u, v)))
-            neighbours.add((v, u))
-            neighbours.add((u, v))
-            ##
-        else:
-            uv, duv = min_edge
-            if uv is not None:
-                u, v = uv
-                d[v] = d[u] + duv
-                r[v] = u
-
-                P.add(v)
-                Q.remove(v)
-
-                visited.append(('red!30', v))
-   
-            ## spanning tree
-            for v in r:
-                if v == r[v]: continue
-                if (v, r[v]) in neighbours: continue
-                if (r[v], v) in neighbours: continue
-                extra['eink'].append(('red!40', (v, r[v])))
-                extra['eink'].append(('red!40', (r[v], v)))
-            
-            func(vmap, emap, **extra)
-    else:
-        neighbours = set()
-        extra['eink'] = []
-        extra['vink'] = [*visited.copy()]
-        ## spanning tree
-        for v in r:
-            if v == r[v]: continue
-            if (v, r[v]) in neighbours: continue
-            if (r[v], v) in neighbours: continue
-            extra['eink'].append(('red!40', (v, r[v])))
-            extra['eink'].append(('red!40', (r[v], v)))
-        func(vmap, emap, **extra)
-
-        CACHE['r'] = r
-        
-FNAME = 'cps740-p2-1d.tikz'
-SCALE = 1.0
-LaTeX.dump(FNAME, '') ## clear file
-
-vmap = _vmap.copy()
-emap = _emap.copy()
-
-for u,v in list(emap): emap[v,u] = emap[u,v]
-
-prim(emap, vmap, 'A', graph_table)
+LaTeX.dump(FNAME, fig, mode='w')
 
 ##
-FNAME = 'cps740-p2-1e.tikz'
-vmap = CACHE['vmap']
-emap = CACHE['emap']
+FNAME = 'cps740-p2-2c.tikz'
 
-r = CACHE['r']
+_emap = {
+    ('s', 'v1') : {'value': (16, 8), 'label': '$16/8$'},
+    ('s', 'v2') : {'value': (13, 6), 'label': '$13/6$', 'swap': True},
+    ('v2', 'v1') : {'value': (4, 4), 'label': '$4/4$'},
+    ('v1', 'v3') : {'value': (12, 12), 'label': '$12/12$'},
+    ('v3', 'v2') : {'value': (9, 9), 'label': '$9/9$', 'swap': True},
+    ('v2', 'v4') : {'value': (14, 11), 'label': '$14/11$', 'swap': True},
+    ('v4', 'v3') : {'value': (7, 7), 'label': '$7/7$', 'swap': True},
+    ('v3', 't') : {'value': (20, 10), 'label': '$20/10$'},
+    ('v4', 't') : {'value': (4, 4), 'label': '$4/4$', 'swap': True}
+    }
 
-E = set(emap.keys())
-A = E - ({(r[v], v) for v in vmap if r[v] != v} | {(v, r[v]) for v in vmap if r[v] != v})
 
-for e in E:
-    if e in A: ## to remove
-        del emap[e]
-    else:
-        emap[e]['label'] = ''
-        emap[e]['color'] = 'violet!75'
+_path = None #('s', 'v1', 'v2', 'v4', 't')
 
-for v in set(vmap.keys()):
-    vmap[v]['label'] = v
-    vmap[v]['color'] = 'violet!75'
-    vmap[v]['fill'] = 'white'
+tikz = LaTeX.graph(_vmap, _emap, **kwargs)
 
-SCALE = 1.4
+fig = LaTeX.fig(tikz, title="Uma rede de fluxo maximal mas que não é máximo.")
 
-kwargs = {
-    'scale' : SCALE
-}
-
-tikz = LaTeX.tikz(vmap, emap, **kwargs)
-fig = LaTeX.fig(tikz)
-LaTeX.dump(FNAME, fig)
+LaTeX.dump(FNAME, fig, mode='w')

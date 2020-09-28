@@ -1,0 +1,705 @@
+\documentclass{homework}
+\usepackage{homework}
+
+\usepackage[brazil]{babel}
+
+\title{COC473 - Lista 2}
+\author{Pedro Maciel Xavier}
+\register{116023847}
+\date{25 de setembro de 2020}
+
+\begin{document}
+	
+	\maketitle
+	
+	\quest%%1
+	
+	Aqui está o trecho do código que implementa a função para o cálculo do maior autovalor e seu respectivo autovetor través do método das Potências ("\textit{Power Method}"). As funções auxiliares se encontram no código completo, no apêndice.
+	
+	\lstinputlisting[firstline=765, lastline=805, style=fortranstyle, gobble=0]{matrixlib.f95}
+	 
+	\quest%%2
+	
+	O cálculo dos autovalores pelo método de Jacobi está implementado no código abaixo. As funções auxiliares, como a que calcula a matriz de rotação de \textit{Givens} e a que gera uma matriz identidade estão no código completo, nos apêndices.
+	
+	\lstinputlisting[firstline=807, lastline=847, style=fortranstyle, gobble=0]{matrixlib.f95}
+	
+	\quest%%3
+		Seja o seguinte sistema de equações $\vec{A} \vec{x} = \vec{B}$:
+	
+		$$
+		\vec{A} = \left[\begin{array}{@{}ccc@{}}
+		 3 &  2 &  0 \\
+		 2 &  3 & -1 \\
+		 0 & -1 &  3
+		\end{array}\right]
+		~
+		\vec{b} = \left[\begin{array}{@{}c@{}}
+		 1 \\
+		-1 \\
+		 1 
+		\end{array}\right]
+		$$
+	
+		\subsubquest Para obter o polinômio característico, calculamos
+			\begin{align*}
+				\det (\vec{A} - \lambda \vec{I}) &= \left|\begin{array}{@{}ccc@{}}
+				3 - \lambda &  2 &  0 \\
+				2 & 3 - \lambda & -1 \\
+				0 & -1 & 3 - \lambda
+				\end{array}\right|\\
+				&= (3 - \lambda) \left|\begin{array}{@{}cc@{}}
+				3 - \lambda & -1 \\
+				-1 & 3 - \lambda
+				\end{array}\right| - 2 \left|\begin{array}{@{}cc@{}}
+				 2 &  0 \\
+				-1 & 3 - \lambda
+				\end{array}\right|\\
+				&= (3 - \lambda) [(3 - \lambda)^2 - 1] - 4 (3 - \lambda)\\
+				&= (3 - \lambda) [(3 - \lambda)^2 - 5]\\
+				&= (3 - \lambda) (\lambda^2 - 6\lambda + 4)\\
+			\end{align*}
+		Buscando as raízes $\lambda_i$ deste polinômio, podemos afirmar que $\lambda = 3$ é um dos autovalores. Usando a fórmula de Bhaskara, encontramos os demais.
+			\begin{align*}
+				\Delta &= (-6)^2 - 4 \cdot 1 \cdot 4 = 20\\
+				\implies \lambda_i &= \frac{6 \pm \sqrt{20}}{2} = 3 \pm \sqrt{5}
+			\end{align*}
+		Assim, $\lambda_i \in \{3 - \sqrt{5}, 3, 3 + \sqrt{5}\}$. Os autovetores $\vec{v}_i$, por outro lado, devem satisfazer
+			$$ \vec{A} \vec{v}_i = \lambda_i \vec{v}_i $$
+		Logo, um autovetor $\vec{v}$ da forma $\left[x, y, z\right]^\T$ obedece
+			\begin{align*}
+				\left[\begin{array}{@{}ccc@{}}
+				3 &  2 &  0 \\
+				2 &  3 & -1 \\
+				0 & -1 &  3
+				\end{array}\right] \left[\begin{array}{@{}c@{}}
+				x \\
+				y \\
+				z 
+				\end{array}\right] = \left[\begin{array}{@{}c@{}}
+				\lambda x \\
+				\lambda y \\
+				\lambda z 
+				\end{array}\right]
+			\end{align*}
+		ou seja,
+			\begin{align*}
+			\begin{array}{@{}ccccccc@{}}
+			3x&+&2y&~&~~&=&\lambda x\\
+			2x&+&3y&-&~z&=&\lambda y\\
+			~~&-&~y&+&3z&=&\lambda z
+			\end{array}
+			\end{align*}
+		de onde tiramos que
+			\begin{align*}
+				y &= \frac{(\lambda - 3)}{2} x\\
+				z &= 2x -(\lambda - 3) y = \frac{4 - (\lambda - 3)^2}{2} x
+			\end{align*}
+		e com isso dizemos que todo autovetor de $\vec{A}$ tem a forma
+			\begin{align*}
+				\left[\begin{array}{@{}c@{}}
+				1 \\
+				\frac{(\lambda - 3)}{2} \\
+				\frac{4 - (\lambda - 3)^2}{2}
+				\end{array}\right]
+			\end{align*}
+		Substituindo os autovalores na relação:
+			\begin{align*}
+			\vec{v} \in \left\{\left[\begin{array}{@{}c@{}}
+			1 \\
+			\frac{-\sqrt{5}}{2} \\
+			\frac{-1}{2}
+			\end{array}\right],
+			\left[\begin{array}{@{}c@{}}
+			1 \\
+			0 \\
+			2
+			\end{array}\right],
+			\left[\begin{array}{@{}c@{}}
+			1 \\
+			\frac{\sqrt{5}}{2} \\
+			\frac{-1}{2}
+			\end{array}\right]
+			\right\}~\text{ e }~
+			\lambda \in \left\{3 - \sqrt{5}, 3, 3 + \sqrt{5}\right\}
+			\end{align*}
+		respectivamente.
+		
+		
+		\subsubquest Como todos os autovalores são positivos $(\lambda_i > 0)$, podemos afirmar que $\vec{A}$ é positiva definida.
+		
+		\subsubquest O método da potência ("\textit{Power Method}") consiste em, partindo de um vetor $\vec{x}^{(0)}$, cuja primeira componente é $1$, aplicar sucessivamente a matriz $\vec{A}$ sobre o vetor, normalizando suas demais entradas, dividindo-as pelo valor da primeira a cada iteração $k$. Seja $\vec{y}^{(k)} = \vec{A} \vec{x}^{(k)}$. Assim, podemos dizer que
+			\begin{align*}
+				\vec{x}^{(k)} = \frac{\vec{y}^{(k-1)}}{\vec{y}_1^{(k-1)}}
+			\end{align*}
+		Observando as entradas da matriz, afirmamos que
+			\begin{align*}
+				\vec{y}_1^{(k)} &= 3 \vec{x}_1^{(k)} + 2 \vec{x}_2^{(k)}\\
+				\vec{y}_2^{(k)} &= 2 \vec{x}_1^{(k)} + 3 \vec{x}_2^{(k)} - \vec{x}_3^{(k)}\\
+				\vec{y}_3^{(k)} &= - \vec{x}_2^{(k)} + 3 \vec{x}_3^{(k)}
+			\end{align*}
+		e, portanto
+			\begin{align*}
+			\vec{x}_1^{(k)} &= 1\\
+			\vec{x}_2^{(k)} &= \frac{2 \vec{x}_1^{(k-1)} + 3 \vec{x}_2^{(k-1)} - \vec{x}_3^{(k-1)}}{3 \vec{x}_1^{(k-1)} + 2 \vec{x}_2^{(k-1)}}\\
+			\vec{x}_3^{(k)} &= \frac{- \vec{x}_2^{(k-1)} + 3 \vec{x}_3^{(k-1)}}{3 \vec{x}_1^{(k-1)} + 2 \vec{x}_2^{(k-1)}}
+			\end{align*}
+		Para calcular o valor de $\vec{x}$, tomemos o limite de $\vec{x}^{(k)}$ quando $k \to \infty$, sobre cada componente
+			\begin{align*}
+				\vec{x}_1 &= \Lim{k \to \infty} \vec{x}_1^{(k)} = 1\\
+				\vec{x}_2 &= \Lim{k \to \infty} \vec{x}_2^{(k)} = \frac{2 \Lim{k \to \infty} \vec{x}_1^{(k-1)} + 3 \Lim{k \to \infty} \vec{x}_2^{(k-1)} - \Lim{k \to \infty} \vec{x}_3^{(k-1)}}{3 \Lim{k \to \infty} \vec{x}_1^{(k-1)} + 2 \Lim{k \to \infty} \vec{x}_2^{(k-1)}}\\
+				\vec{x}_3 &= \Lim{k \to \infty} \vec{x}_3^{(k)} = \frac{- \Lim{k \to \infty} \vec{x}_2^{(k-1)} + 3 \Lim{k \to \infty} \vec{x}_3^{(k-1)}}{3 \Lim{k \to \infty} \vec{x}_1^{(k-1)} + 2 \Lim{k \to \infty} \vec{x}_2^{(k-1)}}
+			\end{align*}
+		Como para toda sequência convergente $a_k \in \mathbb{R}$, $\Lim{k \to \infty} a_k = L \implies \Lim{k \to \infty} a_{k - 1} = L$, segue que
+			\begin{align*}
+				\vec{x}_1 &= 1\\
+				\vec{x}_2 &= \frac{2 + 3 \vec{x}_2 - \vec{x}_3}{3 + 2 \vec{x}_2}\\
+				\vec{x}_3 &= \frac{- \vec{x}_2 + 3  \vec{x}_3}{3 + 2 \vec{x}_2}
+			\end{align*}
+		Consequentemente,
+			\begin{align*}\left\{\begin{array}{@{}ccc@{}}
+			3 \vec{x}_2 + 2 \vec{x}_2^2 &=& 2 + 3 \vec{x}_2 - \vec{x}_3\\
+			3 \vec{x}_3 + 2 \vec{x}_2 \vec{x}_3 &=& - \vec{x}_2 + 3 \vec{x}_3
+			\end{array}\right. \implies \left\{\begin{array}{@{}ccc@{}}
+			2 \vec{x}_2^2 &=& 2 - \vec{x}_3\\
+			2 \vec{x}_2 \vec{x}_3 &=& - \vec{x}_2
+			\end{array}\right. \implies \left\{\begin{array}{@{}ccc@{}}
+			\vec{x}_2 &=& \frac{\sqrt{5}}{2}\\
+			\vec{x}_3 &=& - \frac{1}{2}
+			\end{array}\right.
+			\end{align*}
+		Portanto, o autovetor $\vec{v}_\text{max}$ associado ao autovalor de maior módulo é
+		\begin{align*}
+			\vec{v}_\text{max} = \left[\begin{array}{@{}c@{}}
+			1 \\
+			\frac{\sqrt{5}}{2} \\
+			- \frac{1}{2}
+			\end{array}\right]
+		\end{align*}
+		e, por construção, o maior autovalor $\lambda_\text{max}$ é dado por
+			$$ \lambda_\text{max} = 3 \vec{x}_1 + 2 \vec{x}_2 = 3 + \sqrt{5} $$
+			
+		\subsubquest Segue o passo-a-passo do algoritmo de Jacobi para autovalores, com uma tolerância $|a_{i,j}| \le 10^{-3}$.
+		
+		\begin{align*}
+		%% ---------- %%
+		\vec{A}^{(0)} &= \begin{bmatrix}
+		3 & 2 & 0\\
+		2 & 3 & -1\\
+		0 & -1 & 3
+		\end{bmatrix}~
+		\vec{X}^{(0)} = \begin{bmatrix}
+		1 & 0 & 0\\
+		0 & 1 & 0\\
+		0 & 0 & 1
+		\end{bmatrix}\\[1cm]
+		%% ---------- %%
+		\vec{A}^{(1)} &= \begin{bmatrix}
+		1 & 0 & 0.707\\
+		0 & 5 & -0.707\\
+		0.707 & -0.707 & 3
+		\end{bmatrix}~
+		\vec{X}^{(1)} = \begin{bmatrix}
+		0.707 & 0.707 & 0\\
+		-0.707 & 0.707 & 0\\
+		0 & 0 & 1
+		\end{bmatrix}\\[1cm]
+		%% ---------- %%
+		\vec{A}^{(2)} &= \begin{bmatrix}
+		1 & 0.674 & 0.214\\
+		0.674 & 2.775 & 0\\
+		0.214 & 0 & 5.225
+		\end{bmatrix}~
+		\vec{X}^{(2)} = \begin{bmatrix}
+		0.707 & 0.214 & -0.674\\
+		-0.707 & 0.214 & -0.674\\
+		0 & 0.953 & 0.303
+		\end{bmatrix}\\[1cm]
+		%% ---------- %%
+		\vec{A}^{(3)} &= \begin{bmatrix}
+		0.773 & 0 & 0.203\\
+		0 & 3.002 & 0.068\\
+		0.203 & 0.068 & 5.225
+		\end{bmatrix}~
+		\vec{X}^{(3)} = \begin{bmatrix}
+		0.602 & 0.429 & -0.674\\
+		-0.738 & -0.023 & -0.674\\
+		-0.304 & 0.903 & 0.303
+		\end{bmatrix}\\[1cm]
+		%% ---------- %%
+		\vec{A}^{(4)} &= \begin{bmatrix}
+		0.764 & -0.003 & 0\\
+		-0.003 & 3.002 & 0.068\\
+		0 & 0.068 & 5.234
+		\end{bmatrix}~
+		\vec{X}^{(4)} = \begin{bmatrix}
+		0.632 & 0.429 & -0.646\\
+		-0.707 & -0.023 & -0.707\\
+		-0.317 & 0.903 & 0.289
+		\end{bmatrix}\\[1cm]
+		%% ---------- %%
+		\vec{A}^{(5)} &= \begin{bmatrix}
+		0.764 & 0 & 0\\
+		0 & 3.002 & 0.068\\
+		0 & 0.068 & 5.234
+		\end{bmatrix}~
+		\vec{X}^{(5)} = \begin{bmatrix}
+		0.632 & 0.428 & -0.646\\
+		-0.707 & -0.022 & -0.707\\
+		-0.316 & 0.904 & 0.289
+		\end{bmatrix}\\[1cm]
+		%% ---------- %%
+		\vec{A}^{(6)} &= \begin{bmatrix}
+		0.764 & 0 & 0\\
+		0 & 3 & 0\\
+		0 & 0 & 5.236
+		\end{bmatrix}~
+		\vec{X}^{(6)} = \begin{bmatrix}
+		0.632 & 0.447 & -0.632\\
+		-0.707 & 0 & -0.707\\
+		-0.316 & 0.894 & 0.316
+		\end{bmatrix}
+		%% ---------- %%
+		\end{align*}
+		
+		Após 6 iterações, temos os autovalores aproximados de $\vec{A}$ nas entradas da diagonal principal de $\vec{A}^{(6)}$, e seus respectivos autovetores nas respectivas colunas de $\vec{X}^{(6)}$.
+		
+		\subsubquest Vamos resolver agora o sistema $\vec{A}\vec{x} = \vec{b}$ de quatro maneiras distintas.
+		
+		\begin{enumerate}[wide, leftmargin=80pt]
+			\item[1.: \textit{Cholesky}]~\\
+			
+			O método de \textit{Cholesky} nos dá uma fórmula direta para a fatoração $\vec{A} = \vec{L}\vec{L}^\T$:
+			$$\vec{L} = {\begin{bmatrix}
+				{\sqrt {\vec{A}_{1,1}}} & 0 & 0\\
+				\frac{\vec{A}_{2,1}}{\vec{L}_{1,1}} & {\sqrt {\vec{A}_{2,2}-\vec{L}_{2,1}^{2}}} & 0\\
+				\frac{\vec{A}_{3,1}}{\vec{L}_{1,1}} & \frac{\left(\vec{A}_{3,2}-\vec{L}_{3,1}\vec{L}_{2,1}\right)}{L_{2,2}} &{\sqrt {\vec{A}_{3,3}-\vec{L}_{3,1}^{2}-\vec{L}_{3,2}^{2}}}
+			\end{bmatrix}}$$
+			Portanto,
+			$$\vec{L} = {\begin{bmatrix}
+				\sqrt{3} & 0& 0\\
+				\frac{2}{\sqrt{3}} & \sqrt {\frac{5}{3}} & 0\\
+				0 &- \sqrt {\frac{3}{5}} & 2\sqrt {\frac{3}{5}}
+				\end{bmatrix}}$$
+			Resolvemos primeiro o sistema $\vec{L}\vec{y} = \vec{b}$:
+			$$\begin{bmatrix}
+			\sqrt{3} & 0& 0\\
+			\frac{2}{\sqrt{3}} & \sqrt {\frac{5}{3}} & 0\\
+			0 &- \sqrt {\frac{3}{5}} & 2\sqrt {\frac{3}{5}}
+			\end{bmatrix} \begin{bmatrix}
+			\vec{y}_1\\
+			\vec{y}_2\\
+			\vec{y}_3
+			\end{bmatrix} = \begin{bmatrix}
+			1\\
+			-1\\
+			1
+			\end{bmatrix}
+			$$
+			de onde tiramos que $$\vec{y} = \begin{bmatrix}
+			\frac{1}{\sqrt{3}}\\
+			-\sqrt{\frac{5}{3}}\\
+			0
+			\end{bmatrix}$$
+			
+			Por fim, resolvemos $\vec{L}^\T \vec{x} = \vec{y}$:
+			$$\begin{bmatrix}
+			\sqrt{3} & \frac{2}{\sqrt{3}}& 0\\
+			0 & \sqrt {\frac{5}{3}} & - \sqrt {\frac{3}{5}}\\
+			0 & 0 & 2\sqrt {\frac{3}{5}}
+			\end{bmatrix} \begin{bmatrix}
+			\vec{x}_1\\
+			\vec{x}_2\\
+			\vec{x}_3
+			\end{bmatrix} = \begin{bmatrix}
+			\frac{1}{\sqrt{3}}\\
+			-\sqrt{\frac{5}{3}}\\
+			0
+			\end{bmatrix}
+			$$
+			e assim temos $$\vec{x} = \begin{bmatrix}
+			1\\
+			-1\\
+			0
+			\end{bmatrix}$$
+			
+			\item[2.: \textit{Jacobi}]~\\
+			
+			Vamos analisar este algoritmo sob a perspectiva de sua matriz de transformação $\vec{J} = \vec{S}^{-1}\vec{T}$, onde $\vec{A} = \vec{S} - \vec{T}$ e $\vec{S}$ é a matriz diagonal cujos elementos são idênticos aos da diagonal principal de $\vec{A}$. Vejamos:\par
+			
+			\begin{align*}\vec{S} &= \left[
+			\begin{array}{@{}ccc@{}}
+			3 & 0 & 0 \\[1ex]
+			0 & 3 & 0 \\[1ex]
+			0 & 0 & 3 
+			\end{array}
+			\right]
+			~%%
+			\vec{T} = \left[
+			\begin{array}{@{}ccc@{}}
+			0 & -2 & 0 \\[1ex]
+			-2 & 0 & 1 \\[1ex]
+			0 & 1 & 0
+			\end{array}
+			\right]
+			\end{align*}
+			
+			\begin{align*}
+			\vec{J} = \vec{S}^{-1}\vec{T} &= \left[
+			\begin{array}{@{}ccc@{}}
+			\frac{1}{3} & 0 & 0 \\[1ex]
+			0 & \frac{1}{3} & 0 \\[1ex]
+			0 & 0 & \frac{1}{3}
+			\end{array}
+			\right]
+			\left[\begin{array}{@{}ccc@{}}
+			0 & -2 & 0 \\[1ex]
+			-2 & 0 & 1 \\[1ex]
+			0 & 1 & 0
+			\end{array}\right] = \left[\begin{array}{@{}ccc@{}}
+			0 & -\frac{2}{3} & 0 \\[1ex]
+			-\frac{2}{3} & 0 & \frac{1}{3} \\[1ex]
+			0 & \frac{1}{3} & 0
+			\end{array}
+			\right]
+			\end{align*}
+			
+			Calculamos então os autovalores de $\vec{J}$, que chamaremos $\vec{\Lambda}$. Seja $\vec{\Theta}$ a matriz dos autovetores de $\vec{J}$ e $\vec{\Theta}^{-1}$ a sua inversa.
+			
+			\begin{align*}
+				\vec{\Lambda} = \left[
+				\begin{array}{@{}ccc@{}}
+				-\frac{\sqrt{5}}{3} & 0 & 0 \\[1ex]
+				0 & \frac{\sqrt{5}}{3} & 0 \\[1ex]
+				0 & 0 & 0 \\
+				\end{array}
+				\right]~%%
+				\vec{\Theta} = \left[ %% Theta
+				\begin{array}{@{}ccc@{}}
+				-2 & -2 & \frac{1}{2} \\
+				-\sqrt{5} & \sqrt{5} & 0 \\
+				1 & 1 & 1 \\
+				\end{array}
+				\right] %% End Theta
+				\vec{\Theta}^{-1} = \left[
+				\begin{array}{@{}ccc@{}}
+				-\frac{1}{5} & -\frac{1}{2 \sqrt{5}} & \frac{1}{10} \\
+				-\frac{1}{5} & \frac{1}{2 \sqrt{5}} & \frac{1}{10} \\
+				\frac{2}{5} & 0 & \frac{4}{5} \\
+				\end{array}
+				\right]~
+			\end{align*}
+			
+			Dizemos que uma iteração do método de \textit{Jacobi} é representada pela relação $\vec{x}^{(k+1)} = \vec{S}^{-1}\left(\vec{T}\vec{x}^{(k)} + \vec{b}\right)$. Seja $\hat{\vec{b}} = \vec{S}^{-1}\vec{b}$. A partir disso, reescrevemos a iteração como $\vec{x}^{(k+1)} = \vec{J} \vec{x}^{(k)} + \hat{\vec{b}}$. Aplicando sucessivamente este operação temos:
+			
+			\begin{align*}
+				\vec{x}^{(k+1)} &= \vec{J} \vec{x}^{(k)} + \hat{\vec{b}}\\
+				\vec{x}^{(k+2)} &= \vec{J}^{2} \vec{x}^{(k)} + \vec{J}\hat{\vec{b}} + \hat{\vec{b}}\\
+				\vec{x}^{(k+3)} &= \vec{J}^{3} \vec{x}^{(k)} + \vec{J}^{2} \hat{\vec{b}} + \vec{J}\hat{\vec{b}} + \hat{\vec{b}}\\
+				&\vdots\\
+				\vec{x}^{(k+m)} &= \vec{J}^{m} \vec{x}^{(k)} + \sum_{j=0}^{m-1} \vec{J}^{j}\hat{\vec{b}}
+			\end{align*}
+			
+			O autovalor de maior módulo, $\lambda_\text{max} = \frac{\sqrt{5}}{3}$ nos indica que o raio espectral da matriz de iteração é $\rho\left(\vec{J}\right) = |\frac{\sqrt{5}}{3}| \approx 0.7453 < 1$. Portanto, temos a garantia da convergência do método, vamos adiante.\par
+		
+			
+			Outra informação de grande valor que o raio espectral nos dá é a taxa de convergência. Sabemos que o comportamento do erro é limitado pela aplicação da matriz $\vec{J}$, segundo o qual vale
+			
+			\begin{align*}	
+				\vec{e}^{(k)} &\approx \vec{J}^{k} \vec{e}^{(0)}\\
+				\therefore e^{(k)} &\approx \rho\left(\vec{J}\right)^{k} e^{(0)}
+			\end{align*}
+			
+			onde temos o erro $e^{(k)} = ||\vec{e}^{(k)}|| = ||\vec{x}^{(k)} - \vec{x}||$.\par
+			
+			Assim, podemos obter uma estimativa do número $k$ de passos necessários para a convergência, supondo uma tolerância $\text{tol} = 10^{-5}$. Logo,
+			
+			\begin{align*}
+				10^{-5} &> e^{(k)} = \rho\left(\vec{J}\right)^{k} e^{(0)} =  \left(\frac{\sqrt{5}}{3}\right)^{k} e^{(0)}\\
+				\log_{10}\left(10^{-5}\right) &> \log_{10}\left[\left(\frac{\sqrt{5}}{3}\right)^{k} e^{(0)}\right]\\
+				-5 &> k \log_{10}\left(\frac{\sqrt{5}}{3}\right) + \log_{10}\left(e^{(0)}\right)\\
+				\therefore k &> \frac{5 + \log_{10}\left(e^{(0)}\right)}{- \log_{10}\left(\sqrt{5}/3\right)}
+			\end{align*}
+			
+			Vamos supor que $e^{(0)} = O(1)$, e assim temos que $k > 39$.\par
+			
+			Calcularemos, portanto, $\vec{x}^{(k)}$ da seguinte forma:
+			
+			\begin{align*}
+				\vec{x}^{(k)} &= \vec{J}^{k} \vec{x}^{(0)} + \sum_{j=1}^{k} \vec{J}^{j-1}\hat{\vec{b}}\\
+							  &= \vec{\Theta}\vec{\Lambda}^k\vec{\Theta}^{-1} \vec{x}^{(0)} + \left[\sum_{j=1}^{k} \vec{\Theta}\vec{\Lambda}^{j-1}\vec{\Theta}^{-1}\right] \hat{\vec{b}}\\
+							  &= \vec{\Theta}\vec{\Lambda}^k\vec{\Theta}^{-1} \vec{x}^{(0)} +  \vec{\Theta}\left[\sum_{j=0}^{k-1}\vec{\Lambda}^{j}\right]\vec{\Theta}^{-1} \hat{\vec{b}}
+			\end{align*}
+			
+			Aqui trazemos o interessante fato de que
+			
+			\begin{align*}
+				\sum_{j=0}^{k-1}\vec{\Lambda}^{j} = \left[
+				\begin{array}{@{}ccc@{}}
+				\displaystyle\sum_{j=0}^{k-1} \lambda_1^{j} & ~ & ~ \\[2ex]
+				 ~ & \displaystyle\sum_{j=0}^{k-1} \lambda_2^{j}& ~ \\[2ex]
+				~ & ~ & \displaystyle\sum_{j=0}^{k-1} \lambda_3^{j}
+				\end{array}
+				\right] = \left[
+				\begin{array}{@{}ccc@{}}
+				\displaystyle\frac{1 - \lambda_1^k}{1 - \lambda_1} & ~ & ~ \\[4ex]
+				~ & \displaystyle\frac{1 - \lambda_2^k}{1 - \lambda_2} & ~ \\[4ex]
+				~ & ~ & \displaystyle\frac{1 - \lambda_3^k}{1 - \lambda_3}
+				\end{array}
+				\right]
+			\end{align*}
+			uma vez que $\forall i ~ \lambda_i \neq 1$.\par
+			
+			Escolhendo $k = 40$ e $\vec{x}^{(0)} = \left[0, 0, 0\right]$ , vamos às contas:
+			\begin{align*}
+				\vec{x}^{(40)} &= 0 +  \vec{\Theta}\left[\sum_{j=0}^{39}\vec{\Lambda}^{j}\right]\vec{\Theta}^{-1} \vec{S}^{-1}\vec{b}
+			\end{align*}
+			Na forma matricial temos:
+			\begin{align*}
+				\vec{x}^{(40)} &=
+				\left[ %% Theta
+				\begin{array}{@{}ccc@{}}
+				-2 & -2 & \frac{1}{2} \\[1ex]
+				-\sqrt{5} & \sqrt{5} & 0 \\[1ex]
+				1 & 1 & 1
+				\end{array}
+				\right] %% End Theta
+				\left[ %% Lambda
+				\begin{array}{@{}ccc@{}}
+				\frac{1 - (-\sqrt{5}/3)^{40}}{1 + \sqrt{5}/3}& ~ & ~ \\[1ex]
+				~ & \frac{1 + (\sqrt{5}/3)^{40}}{1 - \sqrt{5}/3} & ~ \\[1ex]
+				~ & ~ & 1
+				\end{array}
+				\right] %% End Lambda
+				\left[ %%Theta-1
+				\begin{array}{@{}ccc@{}}
+				-\frac{1}{5} & -\frac{1}{2 \sqrt{5}} & \frac{1}{10} \\[1ex]
+				-\frac{1}{5} & \frac{1}{2 \sqrt{5}} & \frac{1}{10} \\[1ex]
+				\frac{2}{5} & 0 & \frac{4}{5}
+				\end{array}%% End Theta-1
+				\right]
+				\left[%% S-1
+				\begin{array}{@{}ccc@{}}
+				\frac{1}{3} & 0 & 0 \\[1ex]
+				0 & \frac{1}{3} & 0 \\[1ex]
+				0 & 0 & \frac{1}{3}
+				\end{array}
+				\right]%% End S-1
+				\left[ %% b
+				\begin{array}{@{}c@{}}
+				1 \\[1ex]
+				-1 \\[1ex]
+				1 
+				\end{array}
+				\right]\\[0.5cm]
+				&\approx
+				\left[ %% Theta
+				\begin{array}{@{}ccc@{}}
+				-2 & -2 & \frac{1}{2} \\[1ex]
+				-\sqrt{5} & \sqrt{5} & 0 \\[1ex]
+				1 & 1 & 1 \\
+				\end{array}
+				\right] %% End Theta
+				\left[ %% Lambda
+				\begin{array}{@{}ccc@{}}
+				0.57294& ~ & ~ \\[1ex]
+				~ & 3.92702 & ~ \\[1ex]
+				~ & ~ & 1.00000
+				\end{array}
+				\right] %% End Lambda
+				\left[ %%Theta-1
+				\begin{array}{@{}ccc@{}}
+				-\frac{1}{5} & -\frac{1}{2 \sqrt{5}} & \frac{1}{10} \\[1ex]
+				-\frac{1}{5} & \frac{1}{2 \sqrt{5}} & \frac{1}{10} \\[1ex]
+				\frac{2}{5} & 0 & \frac{4}{5}
+				\end{array}%% End Theta-1
+				\right]
+				\left[ %% b
+				\begin{array}{@{}c@{}}
+				\frac{1}{3} \\[1ex]
+				-\frac{1}{3} \\[1ex]
+				\frac{1}{3} 
+				\end{array}
+				\right]\\
+				\vec{x}^{(40)} &\approx
+				\left[
+				\begin{array}{@{}c@{}}
+				\phantom{-}0.999993\\[1ex]
+				-0.999992\\[1ex]
+				\phantom{-}0.000003
+				\end{array}\right]
+			\end{align*}
+			
+			\item[3.: \textit{Gauss-Seidel}]~\\
+			
+			Neste caso, temos a garantia da convergência, uma vez que a matriz é \textit{positiva} (pois seus autovalores são todos positivos), além de ser \textit{simétrica}.\par
+			
+			No item anterior, a diagonalização da matriz de iteração foi possível devido ao fato de que $\vec{A}$ e $\vec{S}$ eram \textit{simétricas}. Isto propagou esta propriedade às matrizes $\vec{T}$ e $\vec{J}$. Neste caso, como a matriz de iteração relacionada ao algoritmo de \textit{Gauss-Seidel} não é simétrica, não podemos contar com isso. Outras alternativas podem surgir nesse sentido, como a forma normal de \textit{Jordan}. No entanto, ela é conhecida por não ser numericamente estável e não costuma ser utilizada.\par
+			
+			Vamos portanto, nos contentar em seguir o algoritmo anterior, inicializando o processo de \textit{Gauss-Seidel} com o vetor $\vec{x}^{(0)} = \left[0.999993,-0.999992, 0.000003\right]$ resultante do algoritmo anterior. Segue que:\par
+			
+			\begin{align*}
+				\vec{x}_1^{(1)} &= \frac{1}{3} (1 + 2 \cdot 0.999993) \approx 0.999995\\
+				\vec{x}_2^{(1)} &= \frac{1}{3} (-1 - 2 \cdot 0.999995 + 0.000003) \approx -0.999996\\
+				\vec{x}_3^{(1)} &= \frac{1}{3} (1 - 0.999995) \approx 0.000001\\
+			\end{align*}
+			
+			Calculando o resíduo temos:
+				$$R = \frac{||\vec{x}^{(1)} - \vec{x}^{(0)}||}{||\vec{x}^{(1)}||} \approx 3.1 \times 10^{-6}$$
+			e o algoritmo termina com
+				$$\vec{x} \approx \left[
+				\begin{array}{@{}c@{}}
+					\phantom{-}0.999995\\
+					-0.999996\\
+					\phantom{-}0.000001
+				\end{array}
+				\right]$$
+			
+			\item[4.: Autovalores e autovetores]~\\
+			
+			Como $\vec{A}$ é simétrica, vale que $\vec{x} = \vec{\Theta}\vec{\lambda}^{-1}\vec{\Theta}^\T \vec{b}$, onde $\vec{\lambda}$ é a matriz diagonal dos autovalores e $\vec{\Theta}$ é a matriz dos autovetores. Logo,
+			
+			\begin{align*}
+				\vec{x} = \left[\begin{array}{@{}ccc@{}}
+				1 & 1 & 1 \\
+				\frac{-\sqrt{5}}{2} & 0 & \frac{\sqrt{5}}{2}\\
+				\frac{-1}{2} & 2 & \frac{-1}{2}
+				\end{array}\right]
+				\left[\begin{array}{@{}ccc@{}}
+				\frac{1}{3 - \sqrt{5}} & 0 & 0 \\
+				0 & \frac{1}{3} & 0\\
+				0 & 0 & \frac{1}{3 + \sqrt{5}}
+				\end{array}\right]
+				\left[\begin{array}{@{}ccc@{}}
+				1 & \frac{-\sqrt{5}}{2} & \frac{-1}{2} \\
+				1 & 0 & 2\\
+				1 & \frac{\sqrt{5}}{2} & \frac{-1}{2}
+				\end{array}\right]
+				\left[\begin{array}{@{}c@{}}
+				1 \\
+				-1 \\
+				1 
+				\end{array}\right] = \left[\begin{array}{@{}c@{}}
+				1 \\
+				-1 \\
+				0 
+				\end{array}\right] 
+			\end{align*}
+		\end{enumerate}
+	
+		\subsubquest Sabemos que, para uma matriz $\vec{A} \in \mathbb{C}^n$ temos $$\det\left(\vec{A}\right) = \prod_{i=1}^{n} \lambda_i$$
+		Portanto, $\det\left(\vec{A}\right) = 3 \cdot (3 - \sqrt{5}) \cdot (3 + \sqrt{5}) = 12$.\par
+		
+	\quest%%4
+	
+	\begin{fortran}[Saída do Programa]
+	 A:
+	|   3.00000    2.00000    0.00000|
+	|   2.00000    3.00000   -1.00000|
+	|   0.00000   -1.00000    3.00000|
+	b:
+	|   1.00000|
+	|  -1.00000|
+	|   1.00000|
+	DET =   12.000000000000000     
+	RAIO ESPECTRAL =   5.2360679804753349     
+	:: Decomposição LU (sem pivoteamento) ::
+	L:
+	|   1.00000    0.00000    0.00000|
+	|   0.66667    1.00000    0.00000|
+	|   0.00000   -0.60000    1.00000|
+	U:
+	|   3.00000    2.00000    0.00000|
+	|   0.00000    1.66667   -1.00000|
+	|   0.00000    0.00000    2.40000|
+	y:
+	|   1.00000|
+	|  -1.66667|
+	|   0.00000|
+	x:
+	|   1.00000|
+	|  -1.00000|
+	|   0.00000|
+	:: Decomposição PLU (com pivoteamento) ::
+	P:
+	|   1.00000    0.00000    0.00000|
+	|   0.00000    1.00000    0.00000|
+	|   0.00000    0.00000    1.00000|
+	L:
+	|   1.00000    0.00000    0.00000|
+	|   0.66667    1.00000    0.00000|
+	|   0.00000   -0.60000    1.00000|
+	U:
+	|   3.00000    2.00000    0.00000|
+	|   0.00000    1.66667   -1.00000|
+	|   0.00000    0.00000    2.40000|
+	y:
+	|   1.00000|
+	|  -1.66667|
+	|   0.00000|
+	x:
+	|   1.00000|
+	|  -1.00000|
+	|   0.00000|
+	DET
+	12.000000000000000     
+	x:
+	|   1.00000|
+	|  -1.00000|
+	|   0.00000|
+	:: Decomposição de Cholesky ::
+	L:
+	|   1.73205    0.00000    0.00000|
+	|   1.15470    1.29099    0.00000|
+	|   0.00000   -0.77460    1.54919|
+	y:
+	|   0.57735|
+	|  -1.29099|
+	|  -0.00000|
+	x:
+	|   1.00000|
+	|  -1.00000|
+	|  -0.00000|
+	:: Método de Jacobi ::
+	Matriz mal-condicionada.
+	:: Método de Gauss-Seidel ::
+	A:
+	|   3.00000    2.00000    0.00000|
+	|   2.00000    3.00000   -1.00000|
+	|   0.00000   -1.00000    3.00000|
+	x:
+	|   1.00000|
+	|  -1.00000|
+	|  -0.00000|
+	b:
+	|   1.00000|
+	|  -1.00000|
+	|   1.00000|
+	e =    6.2803698347351007E-016
+	:: Método das Potências (Power Method) ::
+	x:
+	|   1.00000|
+	|   1.11803|
+	|  -0.50000|
+	lambda:
+	5.2360680332272143     
+	:: Método de autovalores de Jacobi ::
+	L:
+	|   0.76393    0.00000    0.00000|
+	|   0.00000    3.00000   -0.00000|
+	|   0.00000   -0.00000    5.23607|
+	X:
+	|   0.63246    0.44721   -0.63246|
+	|  -0.70711    0.00000   -0.70711|
+	|  -0.31623    0.89443    0.31623|
+	\end{fortran}
+
+	\pagebreak
+	\appendixpage
+	\appendix \section*{Código}
+	\lstinputlisting[style=fortranstyle, gobble=0]{matrixlib.f95}
+	
+%	\begin{thebibliography}{10}
+%		
+%	\end{thebibliography}
+\end{document}

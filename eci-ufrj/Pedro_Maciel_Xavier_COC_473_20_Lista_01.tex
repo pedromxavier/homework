@@ -1,0 +1,552 @@
+\documentclass{homework}
+\usepackage{homework}
+
+\title{COC473 - Lista 1}
+\author{Pedro Maciel Xavier}
+\register{116023847}
+\date{25 de setembro de 2020}
+
+\begin{document}
+	
+	\maketitle
+	
+	\quest%%1
+	
+	Abaixo, o passo-a-passo da resolução do sistema $\vec{A}\vec{x} = \vec{b}$. Ao lado de cada etapa, a matriz de combinação de linhas $\vec{M}$.
+	
+	\begin{align*}
+		\left[\vec{A}|\vec{b}\right]^{(0)} &= \left[\begin{array}{@{}cccc|c@{}}
+		 5 & -4 &  1 &  0 & -1\\[1ex]
+		-4 &  6 & -4 &  1 &  2\\[1ex]
+		 1 & -4 &  6 & -4 &  1\\[1ex]
+		 0 &  1 & -4 &  5 &  3
+		\end{array}\right]
+		%
+		\vec{M}^{(1)} = \left[\begin{array}{@{}cccc@{}}
+		 1 &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		 \frac{4}{5} &  1 &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		 -\frac{1}{5} &  \phantom{-\frac{0}{0}} &  1 &  \phantom{-\frac{0}{0}}\\[1ex]
+		 \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  1
+		\end{array}\right] \\[0.5cm]
+		%%%%
+		\left[\vec{A}|\vec{b}\right]^{(1)} &= \left[\begin{array}{@{}cccc|c@{}}
+		5 & -4 &  1 &  0 & -1\\[1ex]
+		0 &  \frac{14}{5} &  -\frac{16}{5} &  1 & \frac{6}{5}\\[1ex]
+		0 &  -\frac{16}{5} &  \frac{29}{5} & -4 & \frac{6}{5}\\[1ex]
+		0 &  1 & -4 &  5 &  3
+		\end{array}\right]
+		%
+		\vec{M}^{(2)} = \left[\begin{array}{@{}cccc@{}}
+		1 &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  1 &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  \frac{8}{7} &  1 &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  -\frac{5}{14} &  \phantom{-\frac{0}{0}} &  1
+		\end{array}\right]\\[0.5cm]
+		%%%%
+		\left[\vec{A}|\vec{b}\right]^{(2)} &= \left[\begin{array}{@{}cccc|c@{}}
+		5 & -4 &  1 &  0 & -1\\[1ex]
+		0 &  \frac{14}{5} &  -\frac{16}{5} &  1 & \frac{6}{5}\\[1ex]
+		0 &  0 & \frac{15}{7} & -\frac{20}{7} & \frac{18}{7}\\[1ex]
+		0 &  0 & -\frac{20}{7} &  \frac{65}{14} &  \frac{18}{7}
+		\end{array}\right]
+		%
+		\vec{M}^{(3)} = \left[\begin{array}{@{}cccc@{}}
+		1 &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  1 &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  1 &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \frac{4}{3} &  1
+		\end{array}\right]\\[0.5cm]
+		%%%%
+		\left[\vec{A}|\vec{b}\right]^{(3)} &= \left[\begin{array}{@{}cccc|c@{}}
+		5 & -4 &  1 &  0 & -1\\[1ex]
+		0 &  \frac{14}{5} &  -\frac{16}{5} &  1 & \frac{6}{5}\\[1ex]
+		0 &  0 & \frac{15}{7} & -\frac{20}{7} & \frac{18}{7}\\[1ex]
+		0 &  0 & 0 & \frac{5}{6} & 6
+		\end{array}\right]
+		%
+		%%
+	\end{align*}
+	
+	Por substituição, chegamos ao resultado
+		$$\vec{x} = \frac{1}{5}\left[\begin{array}{@{}c@{}}
+		29\\[1ex]
+		51\\[1ex]
+		54\\[1ex]
+		36
+		\end{array}\right]
+		$$
+	 
+	\quest%%2
+	
+	\subsubquest[Decomposição LU e de \textit{Cholesky}]%%
+	
+	Segue a baixo a definição das funções que realizam, respectivamente, a decomposição LU e a de \textit{Cholesky}. Funções auxiliares se encontram no código completo, disponível no apêndice.
+	
+	\lstinputlisting[firstline=478, lastline=542, style=fortranstyle, gobble=0]{matrixlib.f95}
+	
+	\subsubquest[Resolução de um sistema $\vec{A} \vec{x} = \vec{b}$]
+	
+	A partir do resultado da decomposição LU temos um par de rotinas para resolver o sistema linear relacionado:
+	
+	\lstinputlisting[firstline=667, lastline=708, style=fortranstyle, gobble=0]{matrixlib.f95}
+	
+	\subsubquest[Cálculo do determinante $\det\left(\vec{A}\right)$]
+	
+	Aqui estão apresentadas duas rotinas para o cálculo do determinante. Uma através do algoritmo recursivo usual (Teorema de \textit{Laplace}) e outra a partir da decomposição LU.
+	
+	\lstinputlisting[firstline=330, lastline=381, style=fortranstyle, gobble=0]{matrixlib.f95}
+	
+	\quest%%3
+	
+	\subquest[\textit{Jacobi}]
+	
+	Segue o algoritmo iterativo de \textit{Jacobi} para solução de sistemas lineares, com os respectivos sinais relacionados à convergência do método.
+	
+	\lstinputlisting[firstline=544, lastline=597, style=fortranstyle, gobble=0]{matrixlib.f95}
+	
+	\subquest[\textit{Gauss-Seidel}]
+	
+	Agora, a implementação da variante de \textit{Gauss-Seidel}, assim como os respectivos avisos quanto à convergência do método.
+	
+	\lstinputlisting[firstline=599, lastline=663, style=fortranstyle, gobble=0]{matrixlib.f95}	
+	
+	\quest%%4
+	
+	\subsubquest[] Resolveremos agora o sistema linear $\vec{A}\vec{x} = \vec{b}$ dado por:
+	$$
+		\vec{A} = \left[\begin{array}{@{}cccc@{}}
+		 5 & -4 &  1 &  0 \\
+		-4 &  6 & -4 &  1 \\
+		 1 & -4 &  6 & -4 \\
+		 0 &  1 & -4 &  5
+		\end{array}\right]
+		~
+		\vec{b} = \left[\begin{array}{@{}c@{}}
+		-1 \\
+		 2 \\
+		 1 \\
+		 3 
+		\end{array}\right]
+	$$
+	
+	
+	
+		\subsubsubquest[Eliminação Gaussiana]
+		
+		Vamos fazer de maneira semelhante a questão 1, mas dessa vez queremos que os coeficientes da diagonal principal sejam todos iguais a 1.
+		
+		\begin{align*}
+		\left[\vec{A}|\vec{b}\right]^{(0)} &= \left[\begin{array}{@{}cccc|c@{}}
+		5 & -4 &  1 &  0 & -1\\[1ex]
+		-4 &  6 & -4 &  1 &  2\\[1ex]
+		1 & -4 &  6 & -4 &  1\\[1ex]
+		0 &  1 & -4 &  5 &  3
+		\end{array}\right]
+		%
+		\vec{M}^{(1)} = \left[\begin{array}{@{}cccc@{}}
+		1 &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\frac{4}{5} &  1 &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		-\frac{1}{5} &  \phantom{-\frac{0}{0}} &  1 &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  1
+		\end{array}\right] \\[0.5cm]
+		%%%%
+		\left[\vec{A}|\vec{b}\right]^{(1)} &= \left[\begin{array}{@{}cccc|c@{}}
+		5 & -4 &  1 &  0 & -1\\[1ex]
+		0 &  \frac{14}{5} &  -\frac{16}{5} &  1 & \frac{6}{5}\\[1ex]
+		0 &  -\frac{16}{5} &  \frac{29}{5} & -4 & \frac{6}{5}\\[1ex]
+		0 &  1 & -4 &  5 &  3
+		\end{array}\right]
+		%
+		\vec{M}^{(2)} = \left[\begin{array}{@{}cccc@{}}
+		1 &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  1 &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  \frac{8}{7} &  1 &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  -\frac{5}{14} &  \phantom{-\frac{0}{0}} &  1
+		\end{array}\right]\\[0.5cm]
+		%%%%
+		\left[\vec{A}|\vec{b}\right]^{(2)} &= \left[\begin{array}{@{}cccc|c@{}}
+		5 & -4 &  1 &  0 & -1\\[1ex]
+		0 &  \frac{14}{5} &  -\frac{16}{5} &  1 & \frac{6}{5}\\[1ex]
+		0 &  0 & \frac{15}{7} & -\frac{20}{7} & \frac{18}{7}\\[1ex]
+		0 &  0 & -\frac{20}{7} &  \frac{65}{14} &  \frac{18}{7}
+		\end{array}\right]
+		%
+		\vec{M}^{(3)} = \left[\begin{array}{@{}cccc@{}}
+		1 &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  1 &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  1 &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \frac{4}{3} &  1
+		\end{array}\right]\\[0.5cm]
+		%%%%
+		\left[\vec{A}|\vec{b}\right]^{(3)} &= \left[\begin{array}{@{}cccc|c@{}}
+		5 & -4 &  1 &  0 & -1\\[1ex]
+		0 &  \frac{14}{5} &  -\frac{16}{5} &  1 & \frac{6}{5}\\[1ex]
+		0 &  0 & \frac{15}{7} & -\frac{20}{7} & \frac{18}{7}\\[1ex]
+		0 &  0 & 0 & \frac{5}{6} & 6
+		\end{array}\right]
+		%
+		\vec{M}^{(4)} = \left[\begin{array}{@{}cccc@{}}
+		\frac{1}{5} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  \frac{5}{14} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \frac{7}{15} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} & \frac{6}{5}
+		\end{array}\right]\\[0.5cm]
+		%%
+		\left[\vec{A}|\vec{b}\right]^{(4)} &= \left[\begin{array}{@{}cccc|c@{}}
+		1 & -\frac{4}{5} & \frac{1}{5} & 0 & -\frac{1}{5}\\[1ex]
+		0 &  1 & -\frac{8}{7} & \frac{5}{14} & \frac{3}{7}\\[1ex]
+		0 &  0 & 1 & -\frac{4}{3} & \frac{6}{5}\\[1ex]
+		0 &  0 & 0 & 1 & \frac{36}{5}
+		\end{array}\right]
+		\end{align*}
+		
+		Substituindo sucessivamente os valores para $\vec{x}_i$ obtemos:
+		$$\vec{x} = \frac{1}{5}\left[\begin{array}{@{}c@{}}
+		29\\[1ex]
+		51\\[1ex]
+		54\\[1ex]
+		36
+		\end{array}\right]
+		$$
+		
+		
+		\subsubsubquest[Eliminação de \textit{Gauss-Jordan}]%%b
+		
+		Continuando de onde parou a eliminação Gaussiana seguimos com:
+		
+		\begin{align*}
+		\left[\vec{A}|\vec{b}\right]^{(4)} &= \left[\begin{array}{@{}cccc|c@{}}
+		1 & -\frac{4}{5} & \frac{1}{5} & 0 & -\frac{1}{5}\\[1ex]
+		0 &  1 & -\frac{8}{7} & \frac{5}{14} & \frac{3}{7}\\[1ex]
+		0 &  0 & 1 & -\frac{4}{3} & \frac{6}{5}\\[1ex]
+		0 &  0 & 0 & 1 & \frac{36}{5}
+		\end{array}\right]
+		%
+		\vec{M}^{(5)} = \left[\begin{array}{@{}cccc@{}}
+		1 & \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  1 &  \phantom{-\frac{0}{0}} &  -\frac{5}{14}\\[1ex]
+		\phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  1 &  \frac{4}{3} \\[1ex]
+		\phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} & 1
+		\end{array}\right]\\[0.5cm]
+		%%
+		%%
+		\left[\vec{A}|\vec{b}\right]^{(5)} &= \left[\begin{array}{@{}cccc|c@{}}
+		1 & -\frac{4}{5} & \frac{1}{5} & 0 & -\frac{1}{5}\\[1ex]
+		0 &  1 & -\frac{8}{7} & 0 & -\frac{15}{7}\\[1ex]
+		0 &  0 & 1 & 0 & \frac{54}{5}\\[1ex]
+		0 &  0 & 0 & 1 & \frac{36}{5}
+		\end{array}\right]
+		%
+		\vec{M}^{(6)} = \left[\begin{array}{@{}cccc@{}}
+		1 & \phantom{-\frac{0}{0}} &  -\frac{1}{5} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  1 &  \frac{8}{7} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  1 & \phantom{-\frac{0}{0}} \\[1ex]
+		\phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} & 1
+		\end{array}\right]\\[0.5cm]
+		%%
+		%%
+		\left[\vec{A}|\vec{b}\right]^{(6)} &= \left[\begin{array}{@{}cccc|c@{}}
+		1 & -\frac{4}{5} & 0 & 0 & -\frac{59}{25}\\[1ex]
+		0 &  1 & 0 & 0 & \frac{51}{5}\\[1ex]
+		0 &  0 & 1 & 0 & \frac{54}{5}\\[1ex]
+		0 &  0 & 0 & 1 & \frac{36}{5}
+		\end{array}\right]
+		%
+		\vec{M}^{(7)} = \left[\begin{array}{@{}cccc@{}}
+		1 & \frac{4}{5} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  1 &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}}\\[1ex]
+		\phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  1 & \phantom{-\frac{0}{0}} \\[1ex]
+		\phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} &  \phantom{-\frac{0}{0}} & 1
+		\end{array}\right]\\[0.5cm]
+		%%
+		%%
+		\left[\vec{A}|\vec{b}\right]^{(7)} &= \left[\begin{array}{@{}cccc|c@{}}
+		1 &  0 & 0 & 0 & \frac{29}{5}\\[1ex]
+		0 &  1 & 0 & 0 & \frac{51}{5}\\[1ex]
+		0 &  0 & 1 & 0 & \frac{54}{5}\\[1ex]
+		0 &  0 & 0 & 1 & \frac{36}{5}
+		\end{array}\right]
+		\end{align*}
+		
+		Daqui, obtemos o resultado imediatamente:
+		$$\vec{x} = \frac{1}{5}\left[\begin{array}{@{}c@{}}
+		29\\[1ex]
+		51\\[1ex]
+		54\\[1ex]
+		36
+		\end{array}\right]
+		$$
+		
+		\subsubsubquest[Decomposição $\vec{A} = \vec{L}\vec{U}$]%%c
+		
+		O Resultado da decomposição LU da matriz $\vec{A}$ é:
+		
+		$$ L = \left[\begin{array}{@{}cccc@{}}
+		1 &  0 & 0 & 0\\[1ex]
+		-\frac{4}{5} &  1 & 0 & 0\\[1ex]
+		\frac{1}{5} &  -\frac{8}{7} & 1 & 0\\[1ex]
+		0 & \frac{5}{14} & -\frac{4}{3} & 1
+		\end{array}\right]$$
+		
+		$$ U = \left[\begin{array}{@{}cccc@{}}
+		5 &  -4 & 1 & 0\\[1ex]
+		0 &  \frac{14}{5} & -\frac{16}{5} & 1\\[1ex]
+		0 &  0 & \frac{15}{7} & -\frac{20}{7}\\[1ex]
+		0 &  0 & 0 & \frac{5}{6}
+		\end{array}\right]$$
+		
+		Resolvendo primeiro $\vec{L}\vec{y} = \vec{b}$ obtemos:
+			$$\vec{y} = \left[\begin{array}{@{}c@{}}
+			-1\\[1ex]
+			\frac{6}{5}\\[1ex]
+			\frac{18}{7}\\[1ex]
+			6
+			\end{array}\right]$$
+		Por fim, resolvendo $\vec{U}\vec{x} = \vec{y}$:
+			$$\vec{x} = \frac{1}{5}\left[\begin{array}{@{}c@{}}
+			29\\[1ex]
+			51\\[1ex]
+			54\\[1ex]
+			36
+			\end{array}\right]
+			$$
+			
+		\subsubsubquest[Decomposição de \textit{Cholesky} $\vec{A} = \vec{L}\vec{L}^\T$]%%d
+		
+		Pela fórmula temos:
+		
+		$$\vec{L} = \left[\begin{array}{@{}cccc@{}}
+		\sqrt{5} &  0 & 0 & 0\\[1ex]
+		\frac{-4}{\sqrt{5}} & \sqrt{\frac{14}{5}} & 0 & 0\\[1ex]
+		\frac{1}{\sqrt{5}} & -\frac{16}{\sqrt{70}} & \sqrt{\frac{15}{7}} & 0\\[1ex]
+		0 & \sqrt{\frac{5}{14}} & -\frac{20}{\sqrt{105}} & \sqrt{\frac{5}{6}}
+		\end{array}\right]$$
+		
+		Resolvendo $\vec{L} \vec{y} = \vec{b}$ obtemos:
+		$$\vec{y} = \left[\begin{array}{@{}c@{}}
+		-\frac{1}{\sqrt{5}}\\[1ex]
+		\frac{18}{35}\\[1ex]
+		\frac{108}{35}\\[1ex]
+		\frac{216}{5}
+		\end{array}\right]$$
+		Em seguida, para $\vec{L}^\T \vec{x} = \vec{y}$ encontramos:
+		$$\vec{x} = \frac{1}{5}\left[\begin{array}{@{}c@{}}
+		29\\[1ex]
+		51\\[1ex]
+		54\\[1ex]
+		36
+		\end{array}\right]
+		$$
+		
+		\subsubsubquest[Método Iterativo \textit{Jacobi}]%%e
+		
+		Podemos compreender os métodos iterativos e o seu comportamento de convergência separando a matriz $\vec{A}$ em duas matrizes $\vec{S}$ e $\vec{T}$ tais que $\vec{A} = \vec{S} - \vec{T}$. Assim, construímos o processo iterativo de modo que $\vec{S} \vec{x}^{(k+1)} = \vec{T}\vec{x}^{(k)} + \vec{b}$. No caso do método de \textit{Jacobi}, $\vec{S}$ é a matriz composta pela diagonal principal de $\vec{A}$.\par
+		
+		Um critério de convergência que surge dessa perspectiva depende do raio espectral da matriz $\vec{S}^{-1}\vec{T}$. O raio espectral é dado pelo maior autovalor de uma matriz, ou seja,
+			$$\rho\left(\vec{A}\right) = \max_{i} |\lambda_i|$$
+		Em geral, um método iterativo é dito convergente se e somente se $\rho\left(\vec{S}^{-1}\vec{T}\right) < 1$.\par
+		
+		Neste caso, temos
+		
+		$$\vec{S}^{-1}\vec{T} = \left[\begin{array}{@{}cccc@{}}
+		\frac{1}{5} &0 &0 &0\\[1ex]
+		0 & \frac{1}{6} & 0 &0\\[1ex]
+		0 & 0 & \frac{1}{6} &0\\[1ex]
+		0 &0 &0 &\frac{1}{5}
+		\end{array}\right]\left[\begin{array}{@{}cccc@{}}
+		0 & -4 &  1 &  0 \\[1ex]
+		-4 &  0 & -4 &  1 \\[1ex]
+		1 & -4 &  0 & -4 \\[1ex]
+		0 &  1 & -4 &  0
+		\end{array}\right] = \left[\begin{array}{@{}cccc@{}}
+		0& \frac{-4}{5} & \frac{ 1}{5} & 0 \\[1ex]
+		\frac{-4}{6} & 0 & \frac{-4}{6} & \frac{ 1}{6} \\[1ex]
+		\frac{1 }{6}& \frac{-4}{6} & 0 & \frac{-4}{6} \\[1ex]
+		0& \frac{ 1}{5} & \frac{-4}{5} & 0
+		\end{array}\right]
+		$$
+		O autovalor de maior módulo é $\lambda_{\max} = \frac{2 + \sqrt{34}}{6} \approx 1.30516$, portanto o método de \textit{Jacobi} não irá convergir neste caso, já que $\rho\left(\vec{S}^{-1}\vec{T}\right) \ge 1$.
+		
+		
+		\subsubsubquest[Método Iterativo \textit{Gauss-Seidel}]%%f
+		
+		Já no método de \textit{Gauss-Seidel}, o simples fato da matriz ser \textbf{positiva definida} e \textbf{simétrica} nos garante a convergência do método.\par
+		
+		De maneira similar ao que foi feito no exercício anterior, vamos representar o algoritmo através de duas matrizes, $\vec{S}$ e $\vec{T}$ tais que $\vec{A} = \vec{S} - \vec{T}$. No entanto, para o algoritmo de \textit{Gauss-Seidel}, a matriz $\vec{S}$ é dada pela porção triangular inferior de $\vec{A}$, ou seja:\par
+			$$\vec{S} = \left[
+			\begin{array}{@{}cccc@{}}
+			5 & 0 & 0 & 0 \\[1ex]
+			-4 & 6 & 0 & 0 \\[1ex]
+			1 & -4 & 6 & 0 \\[1ex]
+			0 & 1 & -4 & 5
+			\end{array}\right]
+			\vec{T} = \left[
+			\begin{array}{@{}cccc@{}}
+			0 & 4 & -1 & 0 \\[1ex]
+			0 & 0 & 4 & -1 \\[1ex]
+			0 & 0 & 0 & 4 \\[1ex]
+			0 & 0 & 0 & 0
+			\end{array}
+			\right]$$
+		Uma iteração do algoritmo pode, portanto, ser representada pela expressão $\vec{x}^{(k+1)} = \vec{S}^{-1}\left(\vec{T}\vec{x}^{(k)} + \vec{b}\right)$:
+		
+		$$\left[
+		\begin{array}{@{}c@{}}
+		\vec{x}_1^{(k+1)} \\[1ex]
+		\vec{x}_2^{(k+1)} \\[1ex] 
+		\vec{x}_3^{(k+1)} \\[1ex]
+		\vec{x}_4^{(k+1)}
+		\end{array}
+		\right] = \left[
+		\begin{array}{@{}cccc@{}}
+		\frac{1}{5} & 0 & 0 & 0 \\[1ex]
+		\frac{2}{15} & \frac{1}{6} & 0 & 0 \\[1ex]
+		\frac{1}{18} & \frac{1}{9} & \frac{1}{6} & 0 \\[1ex]
+		\frac{4}{225} & \frac{1}{18} & \frac{2}{15} & \frac{1}{5}
+		\end{array}
+		\right]\left(
+		\left[
+		\begin{array}{@{}cccc@{}}
+		0 & 4 & -1 & 0 \\[1ex]
+		0 & 0 & 4 & -1 \\[1ex]
+		0 & 0 & 0 & 4 \\[1ex]
+		0 & 0 & 0 & 0
+		\end{array}
+		\right]\left[
+		\begin{array}{@{}c@{}}
+		\vec{x}_1^{(k)} \\[1ex]
+		\vec{x}_2^{(k)} \\[1ex] 
+		\vec{x}_3^{(k)} \\[1ex]
+		\vec{x}_4^{(k)}
+		\end{array}
+		\right] + \left[
+		\begin{array}{@{}c@{}}
+		-1 \\
+		2 \\
+		1 \\
+		3 \\
+		\end{array}
+		\right]
+		\right)
+		$$
+	Tomando o limite de $\vec{x}^{(k)}$ quando $k \to \infty$, amparados pela garantia da convergência, temos que $\vec{x}^{(k)}, \vec{x}^{(k+1)} \to \vec{x}$. Assim, obtemos as relações:
+		\begin{align*}
+			\vec{x}_1 &=\frac{1}{5} (4 \vec{x}_2-\vec{x}_3-1)\\
+			\vec{x}_2 &=\frac{2}{15} (4 \vec{x}_2-\vec{x}_3-1)+\frac{1}{6} (4 \vec{x}_3-\vec{x}_4+2)\\
+			\vec{x}_3 &=\frac{1}{18} (4 \vec{x}_2-\vec{x}_3-1)+\frac{1}{9} (4 \vec{x}_3-\vec{x}_4+2)+\frac{1}{6} (4 \vec{x}_4+1)\\
+			\vec{x}_4 &= \frac{3}{5} + \frac{4}{225} (-1 + 4 \vec{x}_2 - \vec{x}_3) + \frac{1}{18} (2 + 4 \vec{x}_3 - \vec{x}_4) + \frac{2}{15} (1 + 4 \vec{x}_4)
+		\end{align*}
+	Resolvendo temos
+		\begin{align*}
+		\vec{x}_1 &= \frac{1}{185} (120 \vec{x}_2-151)\\
+		\vec{x}_2 &= \frac{51}{5}\\
+		\vec{x}_3 &= \frac{2}{37} (14 \vec{x}_2+57)\\
+		\vec{x}_4 &= \frac{4}{235} (8 \vec{x}_2+23 \vec{x}_3+93)
+		\end{align*}
+	e, por fim, obtemos
+		$$\vec{x} = \left[
+		\begin{array}{@{}c@{}}
+		\frac{29}{5} \\[1ex]
+		\frac{51}{5} \\[1ex]
+		\frac{54}{5} \\[1ex]
+		\frac{36}{5}
+		\end{array}
+		\right]$$
+	De fato, se tomamos $\vec{x}_0 = \vec{x}$ e inicializamos o algoritmo, temos:
+		\begin{align*}
+		\vec{x}^{(1)}_1 &= \frac{1}{5} (-1 + 4 \vec{x}^{(0)}_2 - \vec{x}^{(0)}_3) = \frac{1}{5} (-1 + \frac{204}{5} - \frac{54}{5}) = \frac{29}{5}\\
+		\vec{x}^{(1)}_2 &= \frac{1}{6} (2 + 4 \vec{x}^{(1)}_1 + 4 \vec{x}^{(0)}_3 - \vec{x}^{(0)}_4) = \frac{1}{6} (2 + \frac{116}{5} + \frac{216}{5} - \frac{36}{5}) = \frac{51}{5}\\
+		\vec{x}^{(1)}_3 &= \frac{1}{6} (1 - \vec{x}^{(1)}_1 + 4 \vec{x}^{(1)}_2 + 4 \vec{x}^{(0)}_4) = \frac{1}{6} (1 - \frac{29}{5} + \frac{204}{5} + \frac{144}{5}) = \frac{54}{5}\\
+		\vec{x}^{(1)}_4 &= \frac{1}{5} (3 - \vec{x}^{(1)}_2 + 4 \vec{x}^{(1)}_3) = \frac{1}{5} (3 -\frac{51}{5} + \frac{162}{5}) = \frac{36}{5}
+		\end{align*}
+	e, portanto,
+		$$R = \frac{||\vec{x}^{(1)} - \vec{x}^{(0)}||}{||\vec{x}^{(1)}||} = 0$$
+	e o algoritmo termina.
+		
+	\subquest[Inversa de $\vec{A}$]
+	
+	Multiplicando todas as matrizes de combinação de linhas $\vec{M}^{(i)}$ obtidas durante a eliminação de \textit{Gauss-Jordan} obtemos
+		$$\vec{A}^{-1} = \prod_{i}^{7} \vec{M}^{(i)} = \frac{1}{5}\left[\begin{array}{@{}cccc@{}}
+		6 & 8 & 7 & 4\\[1ex]
+		8 & 13 & 12 & 7\\[1ex]
+		7 & 12 & 13 & 8\\[1ex]
+		4 & 7 & 8 & 6
+		\end{array}\right]$$
+	
+	\subquest[Determinante de $\vec{A}$]
+	
+	Uma vez que $\det\left(\vec{A} \cdot \vec{B}\right) = \det \left(\vec{A}\right) \cdot \det \left(\vec{B}\right)$ para quaisquer matrizes $\vec{A}, \vec{B}$, podemos calcular o determinante de $\vec{A}$ a partir de sua fatoração LU. Além disso, matrizes triangulares tem a propriedade de que seu determinante é o produto dos elementos na diagonal principal. Assim, sendo $\vec{A} = \vec{L}\vec{U}$, $\det \left(\vec{L}\right) = 1$ e 
+		$$ \det\left(\vec{A}\right) = \prod_{i = 1}^{4} \vec{U}_{i, i} = 5 \cdot \frac{14}{5} \cdot  \frac{15}{7} \cdot \frac{5}{6} = 25 $$
+		
+	\quest[\bfseries Questão 6.:]%%6
+	
+	\begin{fortran}[Saída do programa.]
+	 :: Decomposição PLU (com pivoteamento) ::
+	P:
+	|   1.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000|
+	|   0.00000    1.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000|
+	|   0.00000    0.00000    1.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000|
+	|   0.00000    0.00000    0.00000    1.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000|
+	|   0.00000    0.00000    0.00000    0.00000    1.00000    0.00000    0.00000    0.00000    0.00000    0.00000|
+	|   0.00000    0.00000    0.00000    0.00000    0.00000    1.00000    0.00000    0.00000    0.00000    0.00000|
+	|   0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    1.00000    0.00000    0.00000    0.00000|
+	|   0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    1.00000    0.00000    0.00000|
+	|   0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    1.00000    0.00000|
+	|   0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    1.00000|
+	L:
+	|   1.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000|
+	|   0.56250    1.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000|
+	|   0.50000    0.37696    1.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000|
+	|   0.43750    0.34031    0.32255    1.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000|
+	|   0.37500    0.30366    0.29532    0.29901    1.00000    0.00000    0.00000    0.00000    0.00000    0.00000|
+	|   0.31250    0.26702    0.26809    0.27600    0.32992    1.00000    0.00000    0.00000    0.00000    0.00000|
+	|   0.25000    0.23037    0.24085    0.25298    0.30556    0.35667    1.00000    0.00000    0.00000    0.00000|
+	|   0.18750    0.19372    0.21362    0.22997    0.28119    0.33049    0.38325    1.00000    0.00000    0.00000|
+	|   0.12500    0.15707    0.18638    0.20695    0.25683    0.30431    0.35453    0.41274    1.00000    0.00000|
+	|   0.06250    0.12042    0.15915    0.18393    0.23247    0.27813    0.32580    0.38049    0.44836    1.00000|
+	U:
+	|  16.00000    9.00000    8.00000    7.00000    6.00000    5.00000    4.00000    3.00000    2.00000    1.00000|
+	|   0.00000   11.93750    4.50000    4.06250    3.62500    3.18750    2.75000    2.31250    1.87500    1.43750|
+	|   0.00000    0.00000   12.30366    3.96859    3.63351    3.29843    2.96335    2.62827    2.29319    1.95812|
+	|   0.00000    0.00000    0.00000   13.27489    3.96936    3.66383    3.35830    3.05277    2.74723    2.44170|
+	|   0.00000    0.00000    0.00000    0.00000   12.38928    4.08745    3.78561    3.48378    3.18195    2.88011|
+	|   0.00000    0.00000    0.00000    0.00000    0.00000   11.34240    4.04545    3.74851    3.45156    3.15462|
+	|   0.00000    0.00000    0.00000    0.00000    0.00000    0.00000   10.20359    3.91051    3.61743    3.32435|
+	|   0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    9.00891    3.71834    3.42776|
+	|   0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    7.77482    3.48594|
+	|   0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000    6.50648|
+	y:
+	|   4.00000|
+	|  -2.25000|
+	|   6.84817|
+	|  -3.19319|
+	|  10.11566|
+	|  -4.94113|
+	|   5.34820|
+	|  -4.30386|
+	|   2.02376|
+	|  -2.47118|
+	x:
+	|   0.16240|
+	|  -0.43991|
+	|   0.49837|
+	|  -0.43889|
+	|   0.90442|
+	|  -0.53865|
+	|   0.69105|
+	|  -0.51094|
+	|   0.43059|
+	|  -0.37980|
+	DET
+	20385044096.000000
+	\end{fortran}
+
+	\pagebreak
+	\appendixpage
+	\appendix \section*{Código}
+	\lstinputlisting[style=fortranstyle, gobble=0]{matrixlib.f95}
+	
+%	\begin{thebibliography}{10}
+%		
+%	\end{thebibliography}
+\end{document}

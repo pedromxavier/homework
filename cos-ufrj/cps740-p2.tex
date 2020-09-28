@@ -1,5 +1,6 @@
 \documentclass{homework}
 \usepackage{homework}
+%%
 
 \title{CPS740 - Prova 2}
 \author{Pedro Maciel Xavier}
@@ -60,14 +61,36 @@
 	Iniciando uma busca em profundidade a partir do vértice $A$, seguindo pelo caminho proposto segundo a árvore obtida pelo algoritmo de \textit{Prim}, chegaríamos a $B$ passando por $E$. Aqui encontramos um problema: caso decidamos prosseguir por $C$, alcançaríamos $D$ logo em seguida. Se optamos pelo contrário e seguimos pela aresta ($B$, $D$), temos que ($D$, $C$) pertence a busca em profundidade que continua a partir de $D$. Logo, não é possível reconstruir a árvore geradora através de uma busca em profundidade com raiz em $A$.
 
 	\quest
+	
+	\begin{fig}[Rede de fluxos]%%
+		\input{cps740-p2-2.tikz}
+	\end{fig}%%
 
-	\subquest
+	\subquest O fluxo não é maximal pois existe um caminho aumentante, isto é, que liga $s$ a $t$ cujas arestas não se encontram saturadas. Mais precisamente, o caminho $(s, v_2, v_4, t)$, cujo gargalo é $2$.	
 	
-	\subquest
+	\subquest A capacidade do corte $(S - \{t\}, \{t\})$ é $20 + 4 = 24$. O corte $(S - \{v_3, t\}, \{v_3, t\})$, por sua vez, possui capacidade $12 + 7 + 4 = 23$. Logo, existe um corte de capacidade inferior àquele apresentado que, portanto, não pode ser o mínimo.
 	
-	\subquest
+	\subquest Encontrando o caminho aumentante (em {\color{blue!70} azul}) de maneira gulosa, e recalculando a respectiva rede residual (em {\color{violet!70} violeta}) temos:
 	
-	\subquest	
+	%%\begin{fig}[Rede de fluxos]%%
+		\input{cps740-p2-2a.tikz}
+	%%\end{fig}%%
+	
+	Por fim, não temos mais caminhos aumentante que levem de $s$ até $t$. De fato, já atingimos o fluxo de $23$ unidades, que sabemos ser máximo pois é o valor do corte mínimo. A rede resultante é, portanto:
+	
+	%%\begin{fig}[Rede de fluxos]%%
+		\input{cps740-p2-2b.tikz}
+	%%\end{fig}%%
+	
+	\subquest Um fluxo maximal é aquele onde todas os caminhos da origem ao destino incluem ao menos uma aresta saturada. A rede de fluxos abaixo apresenta fluxo maximal, pois para chegar ao destino $t$ é preciso passar por ao menos uma das arestas saturadas $\{(v_1, v_3), (v_4, v_3), (v_4, t)\}$.
+	
+	%%\begin{fig}[Rede de fluxos]%%
+		\input{cps740-p2-2c.tikz}
+	%%\end{fig}%%
+	
+	O fluxo desta rede é $10 + 4 = 14$, menor do que o máximo, que já sabemos ser $23$.
+	
+	
 	\begin{thebibliography}{10}
 		\bibitem{jayme:18} SZWARCFITER, Jayme Luiz, \textbf{Teoria Computacional de Grafos}, 1ª edição, Rio de Janeiro, 2018.
 	\end{thebibliography}
