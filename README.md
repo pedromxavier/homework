@@ -1,2 +1,2 @@
 # homework
-Library to aid in pdf homework typesetting
+.cls file to aid in LaTeX homework typesetting
